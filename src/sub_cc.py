@@ -342,7 +342,7 @@ def bar_add():
     elif cfg.p2.motion == 0:  # 何もしていないとき
         fb = fre
 
-    P2_b_c = fb
+    P2_b_c = fbｓ
 
     if cfg.p1.motion != 0:
         p1num = str(cfg.p1.motion)
