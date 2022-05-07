@@ -77,7 +77,7 @@ while 1:
     time.sleep(0.003)
     fn1 = cfg.b_fn1_key.raw
     fn2 = cfg.b_fn2_key.raw
-
+    function_key()
 
     # タイマーチェック
     sub.timer_check()
