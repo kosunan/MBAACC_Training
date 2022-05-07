@@ -15,8 +15,8 @@ CAM2_Y_AD = 0x15DEC8
 
 RECORDING_MODE_AD = 0x155137
 DUMMY_STATUS_AD = 0x34D7F8
-#STATUS_STAND( 0 )STATUS_JUMP( 1 )#STATUS_CROUCH( 2 )
-#STATUS_CPU( 3 )#STATUS_MANUAL( 4 )#STATUS_DUMMY( 5 )
+# STATUS_STAND( 0 )STATUS_JUMP( 1 )#STATUS_CROUCH( 2 )
+# STATUS_CPU( 3 )#STATUS_MANUAL( 4 )#STATUS_DUMMY( 5 )
 #STATUS_RECORD( -1 )
 ANTEN_STOP_AD = 0x162A48  # 全体停止
 GAME_MODE_AD = 0x14EEE8
@@ -50,8 +50,8 @@ FN2_KEY_AD = 0x37144D  # BUTTON_FN2 リセットキー
 
 P_info[0].motion_type_ad = DAT_P1_AD
 P_info[1].motion_type_ad = DAT_P1_AD + PLR_STRUCT_SIZE
-P_info[2].motion_type_ad = DAT_P1_AD +  PLR_STRUCT_SIZE * 2
-P_info[3].motion_type_ad = DAT_P1_AD +  PLR_STRUCT_SIZE * 3
+P_info[2].motion_type_ad = DAT_P1_AD + PLR_STRUCT_SIZE * 2
+P_info[3].motion_type_ad = DAT_P1_AD + PLR_STRUCT_SIZE * 3
 
 P_info[0].motion_ad = 0x157FC0
 P_info[1].motion_ad = 0x1581CC
@@ -67,6 +67,11 @@ P_info[0].inv_ad = DAT_P1_AD
 P_info[1].inv_ad = DAT_P1_AD
 P_info[2].inv_ad = DAT_P1_AD
 P_info[3].inv_ad = DAT_P1_AD
+
+P_info[0].step_inv_ad = 0x1552B5
+P_info[1].step_inv_ad = 0x1552B5 + PLR_STRUCT_SIZE
+P_info[2].step_inv_ad = 0x1552B5 + PLR_STRUCT_SIZE * 2
+P_info[3].step_inv_ad = 0x1552B5 + PLR_STRUCT_SIZE * 3
 
 P_info[0].x_ad = DAT_P1_AD + 0xF8
 P_info[1].x_ad = DAT_P1_AD + 0xF8 + PLR_STRUCT_SIZE
