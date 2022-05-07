@@ -221,9 +221,6 @@ def view_st():
     else:
         cfg.anten = 0
 
-    # if cfg.reset_flag == 1:
-    #     cfg.Bar_flag = 0
-
     # バー追加処理
     if cfg.Bar_flag == 1:
         if (cfg.p1.hitstop == 0 or cfg.p2.hitstop == 0):
