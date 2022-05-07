@@ -511,6 +511,7 @@ def view():
 
 def degug_view():
     if cfg.debug_flag == 1:
+        os.system('mode con: cols=166 lines=15')
         # debug_str_p1 = "f_timer " + str(cfg.f_timer).rjust(7, " ")
         # debug_str_p2 = "Bar_num " + str(cfg.Bar_num).rjust(7, " ")
         #
