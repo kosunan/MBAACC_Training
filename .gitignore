@@ -1,2 +1,5 @@
 __pycache__
 *.pyc
+src/__pycache__/sub_cc.cpython-310.pyc
+src/__pycache__/ad_cc.cpython-310.pyc
+src/__pycache__/sub_cc.cpython-310.pyc
