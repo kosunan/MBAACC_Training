@@ -177,29 +177,8 @@ def situationWrit2():
     r_mem(ad.DAT_P2_AD, save.P2_data1, save.data_size)
 
 
-def moon_change():
-
-    if cfg.b_m_st_p1.raw == b'\x00':
-        r_mem(ad.M_ST_P1_AD, b'\x01')
-        r_mem(ad.M_ST_P2_AD, b'\x01')
-
-    elif cfg.b_m_st_p1.raw == b'\x01':
-        r_mem(ad.M_ST_P1_AD, b'\x00')
-        r_mem(ad.M_ST_P2_AD, b'\x00')
-
-    r_mem(ad.M_GAUGE_P1_AD, b'\x10\x27')
-    r_mem(ad.M_GAUGE_P2_AD, b'\x10\x27')
-
-
 def MAX_Damage_ini():
-
-    r_mem(ad.MAX_Damage_Pointer_AD, cfg.temp)
-
-    addres = b_unpack(cfg.temp)
-    addres = addres + 0x1c
-    r_mem(addres, b'\x00\x00\x00\x00')
-    r_mem(addres + 4, b'\x00\x00\x00\x00')
-
+    w_mem(ad.MAX_DAMAGE_AD, b'\x00\x00\x00\x00')
 
 def view_st():
 
