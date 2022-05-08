@@ -107,17 +107,20 @@ def ex_cmd_enable():
         return False
     return True
 
+def situationReset():
+
+    # 状況をリセット
+    w_mem(ad.RESET_AD, b'\xFF')
 
 def pause():
 
     # 一時停止
-    r_mem(ad.TRAINING_PAUSE_AD, b'\xff')
-
+    w_mem(ad.ANTEN_STOP_AD, b'\xff')
 
 def play():
 
     # 再生
-    r_mem(ad.TRAINING_PAUSE_AD, b'\x00')
+    w_mem(ad.ANTEN_STOP_AD, b'\x00')
 
 
 def situationCheck():
@@ -145,35 +148,43 @@ def situationCheck():
 def situationMem():
 
     # 状況を記憶
-    r_mem(ad.CAM_AD, save.b_cam)
     save.P_info = copy.deepcopy(cfg.P_info)
 
+    for n in cfg.P_info:
+        r_mem(n.dmp_ad, n.b_dmp)
+
+
+
+    r_mem( ad.OBJ_AD, save.b_obj)
+    r_mem( ad.STOP_SITUATION_AD, save.b_stop_situation)
+
+    r_mem( ad.ANTEN_STOP_AD, save.b_stop)
+    r_mem( ad.DAMAGE_AD, save.b_damage)
+    r_mem( ad.DAMAGE2_AD, save.b_damage2)
+
+    r_mem( ad.CAM1_X_AD, save.b_cam1_x)
+    r_mem( ad.CAM1_Y_AD, save.b_cam2_x)
+    r_mem( ad.CAM2_X_AD, save.b_cam1_y)
+    r_mem( ad.CAM2_Y_AD, save.b_cam2_y)
 
 def situationWrit():
     # 状況を再現
-    # 状況を再現
-    w_mem(ad.CAM_AD, save.b_cam)
+    save.P_info = copy.deepcopy(cfg.P_info)
 
-    for n in save.P_info:
-        w_mem(n.gauge_ad, n.b_gauge)
-        w_mem(n.x_ad, n.b_x)
+    for n in cfg.P_info:
+        w_mem(n.dmp_ad, n.b_dmp)
 
-    r_mem(ad.DAT_P1_AD, save.dat_p1)
-    r_mem(ad.DAT_P2_AD, save.dat_p2)
-    r_mem(ad.DAT_P3_AD, save.dat_p3)
-    r_mem(ad.DAT_P4_AD, save.dat_p4)
+    w_mem( ad.OBJ_AD, save.b_obj)
+    w_mem( ad.STOP_SITUATION_AD, save.b_stop_situation)
 
-    r_mem(ad.CAM1_X_AD, save.cam1_x)
-    r_mem(ad.CAM1_Y_AD, save.cam2_x)
-    r_mem(ad.CAM2_X_AD, save.cam1_y)
-    r_mem(ad.CAM2_Y_AD, save.cam2_y)
+    w_mem( ad.ANTEN_STOP_AD, save.b_stop)
+    w_mem( ad.DAMAGE_AD, save.b_damage)
+    w_mem( ad.DAMAGE2_AD, save.b_damage2)
 
-
-def situationWrit2():
-    # 状況を再現
-    r_mem(ad.SAVE_BASE_AD, save.save_data, save.data_size2)
-    r_mem(ad.DAT_P1_AD, save.P1_data1, save.data_size)
-    r_mem(ad.DAT_P2_AD, save.P2_data1, save.data_size)
+    w_mem( ad.CAM1_X_AD, save.b_cam1_x)
+    w_mem( ad.CAM1_Y_AD, save.b_cam2_x)
+    w_mem( ad.CAM2_X_AD, save.b_cam1_y)
+    w_mem( ad.CAM2_Y_AD, save.b_cam2_y)
 
 
 def MAX_Damage_ini():
@@ -218,6 +229,8 @@ def view_st():
     # 暗転判定処理
     if cfg.stop != 0:
         cfg.anten += 1
+    elif cfg.p1.anten_stop != 0 or cfg.p2.anten_stop != 0:
+        cfg.anten += 1
     else:
         cfg.anten = 0
 
@@ -227,15 +240,7 @@ def view_st():
     elif (cfg.p1.hitstop == 0 or cfg.p2.hitstop == 0):
         cfg.hitstop = 0
 
-    if cfg.anten_flag == 16 and cfg.p1.anten_stop2 == cfg.p1.anten_stop2_old:
-        cfg.anten += 1
-    else:
-        cfg.anten = 0
 
-    if cfg.anten_flag == 16 and cfg.p2.anten_stop2 == cfg.p2.anten_stop2_old:
-        cfg.anten += 1
-    else:
-        cfg.anten = 0
 
     # バー追加処理
     if cfg.Bar_flag == 1:
@@ -295,7 +300,7 @@ def bar_add():
 
         if n.b_atk.raw != b'\x00':  # 攻撃判定を出しているとき
             font = atk
-        elif (n.b_step_inv != 0 and n.motion_type == 43):  # 無敵中
+        elif n.step_inv != 0:  # バックステップ無敵中
             font = "\x1b[48;5;015m"
 
         elif n.motion != 0:  # モーション途中
@@ -327,6 +332,7 @@ def bar_add():
         if n.motion != 0:
             num = str(n.motion)
         else:
+            font = fre
             num = str(n.motion_type)
 
         if n.hit != 0:
@@ -404,8 +410,8 @@ def get_values():
     cfg.fn1_key = b_unpack(cfg.b_fn1_key)
     cfg.fn2_key = b_unpack(cfg.b_fn2_key)
     cfg.game_mode = b_unpack(cfg.b_game_mode)
-    cfg.dummy_status_ad = b_unpack(cfg.b_dummy_status_ad)
-    cfg.recording_mode_ad = b_unpack(cfg.b_recording_mode_ad)
+    cfg.dummy_status = b_unpack(cfg.b_dummy_status_ad)
+    cfg.recording_mode = b_unpack(cfg.b_recording_mode_ad)
     cfg.stop = b_unpack(cfg.b_stop)
 
     for n in cfg.P_info:
@@ -539,6 +545,8 @@ def degug_view():
         debug_str_p2 += " hitstop " + str(cfg.p2.hitstop).rjust(7, " ")
         debug_str_p1 += " anten " + str(cfg.anten).rjust(7, " ")
         debug_str_p1 += " stop " + str(cfg.stop).rjust(7, " ")
+        debug_str_p1 += " dummy_status " + str(cfg.dummy_status).rjust(7, " ")
+        debug_str_p1 += " fn2_key " + str(cfg.fn2_key).rjust(7, " ")
 
         print(debug_str_p1)
         print(debug_str_p2)

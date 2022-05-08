@@ -28,7 +28,9 @@ save_flag = 0
 flag1 = 0
 start_time = time.time()
 
+
 def function_key():
+
     global flag1
     global save_flag
 
@@ -39,13 +41,19 @@ def function_key():
             save_flag = 0
 
     # 状況記憶
-    elif keyboard.is_pressed("F2"):
+    elif keyboard.is_pressed("F2") or cfg.fn1_key == 1 or cfg.fn1_key == 3:
         if flag1 == 0:
-            sub.pause()
             sub.situationMem()
+            sub.pause()
+
             save_flag = 1
             flag1 = 1
 
+    elif cfg.fn2_key == 1 or cfg.fn2_key == 3:
+        if flag1 == 0:
+            flag1 = 1
+            if cfg.dummy_status == 5 or cfg.dummy_status == -1:
+                sub.situationReset()
 
     # 最大ダメージ初期化
     elif keyboard.is_pressed("F4"):
@@ -54,7 +62,7 @@ def function_key():
         sub.MAX_Damage_ini()
 
     # デバッグ表示
-    elif (keyboard.is_pressed("9"))and(keyboard.is_pressed("0")):
+    elif (keyboard.is_pressed("9")) and (keyboard.is_pressed("0")):
         if cfg.debug_flag == 0:
             cfg.debug_flag = 1
         elif cfg.debug_flag == 1:
@@ -64,6 +72,8 @@ def function_key():
     elif flag1 == 1:
         flag1 = 0
         sub.play()
+
+
 ###############################################################
 # メイン関数
 ###############################################################
@@ -88,7 +98,6 @@ while 1:
         cfg.f_timer2 = cfg.f_timer
         time.sleep(0.001)
 
-
         # 各種数値の取得
         sub.situationCheck()
 
@@ -98,7 +107,7 @@ while 1:
         # ゲーム状況の取得
         sub.view_st()
 
-        if cfg_cc.f_timer <= 1:
+        if cfg_cc.f_timer <= 0:
             sub.bar_ini()
 
             if save_flag == 1:

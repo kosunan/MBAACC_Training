@@ -13,26 +13,28 @@ CAM1_Y_AD = 0x15DEC4
 CAM2_X_AD = 0x164B18
 CAM2_Y_AD = 0x15DEC8
 
+PLR_STRUCT_SIZE = 0xAFC  # 3084
+
+DAT_P1_AD = 0x155140  # 1Pデータ開始位置
+DAT_P2_AD = DAT_P1_AD + PLR_STRUCT_SIZE
+DAT_P3_AD = DAT_P2_AD + PLR_STRUCT_SIZE
+DAT_P4_AD = DAT_P3_AD + PLR_STRUCT_SIZE
+
 RECORDING_MODE_AD = 0x155137
+GAME_MODE_AD = 0x14EEE8
 DUMMY_STATUS_AD = 0x34D7F8
 # STATUS_STAND( 0 )STATUS_JUMP( 1 )#STATUS_CROUCH( 2 )
 # STATUS_CPU( 3 )#STATUS_MANUAL( 4 )#STATUS_DUMMY( 5 )
 #STATUS_RECORD( -1 )
 ANTEN_STOP_AD = 0x162A48  # 全体停止
-GAME_MODE_AD = 0x14EEE8
-TRAINING_PAUSE_AD = 0x162A64
+
+TRAINING_PAUSE_AD = 0x162A64  # メニュー画面開いているとき
 MAX_DAMAGE_AD = 0x157E0C
 
-PLR_STRUCT_SIZE = 0xAFC  # 3084
 
-DAT_P1_AD = 0x155140  # 1Pデータ開始位置
-DAT_P2_AD = DAT_P1_AD + PLR_STRUCT_SIZE  # 2Pデータ開始位置
-DAT_P3_AD = DAT_P2_AD + PLR_STRUCT_SIZE  # 2Pデータ開始位置
-DAT_P4_AD = DAT_P3_AD + PLR_STRUCT_SIZE  # 2Pデータ開始位置
-Obj_AD = 0x27BD70  # オブジェクトデータ開始位置
+OBJ_AD = 0x27BD70  # オブジェクトデータ開始位置
+STOP_SITUATION_AD = 0x158600  # 停止状況データ開始位置
 
-# ST_AD = 0x0155C150  # 状況データ開始位置 6032
-# STOP_ST_AD = 0x0059B390  # 停止状況データ開始位置
 
 DAMAGE_AD = 0x157DD8  # ダメージアドレス開始位置
 DAMAGE2_AD = 0x157E10  # ダメージアドレス開始位置
@@ -47,6 +49,12 @@ comb_aft_timer = 0x36E708
 
 FN1_KEY_AD = 0x37144C  # BUTTON_FN1
 FN2_KEY_AD = 0x37144D  # BUTTON_FN2 リセットキー
+
+
+P_info[0].dmp_ad = DAT_P1_AD
+P_info[1].dmp_ad = DAT_P1_AD + PLR_STRUCT_SIZE
+P_info[2].dmp_ad = DAT_P1_AD + PLR_STRUCT_SIZE * 2
+P_info[3].dmp_ad = DAT_P1_AD + PLR_STRUCT_SIZE * 3
 
 P_info[0].motion_type_ad = DAT_P1_AD
 P_info[1].motion_type_ad = DAT_P1_AD + PLR_STRUCT_SIZE
@@ -78,10 +86,10 @@ P_info[1].x_ad = DAT_P1_AD + 0xF8 + PLR_STRUCT_SIZE
 P_info[2].x_ad = DAT_P1_AD + 0xF8 + PLR_STRUCT_SIZE * 2
 P_info[3].x_ad = DAT_P1_AD + 0xF8 + PLR_STRUCT_SIZE * 3
 
-P_info[0].gauge_ad = DAT_P1_AD
-P_info[1].gauge_ad = DAT_P1_AD
-P_info[2].gauge_ad = DAT_P1_AD
-P_info[3].gauge_ad = DAT_P1_AD
+P_info[0].gauge_ad = 0x155210
+P_info[1].gauge_ad = 0x155210 + PLR_STRUCT_SIZE
+P_info[2].gauge_ad = 0x155210 + PLR_STRUCT_SIZE * 2
+P_info[3].gauge_ad = 0x155210 + PLR_STRUCT_SIZE * 3
 
 P_info[0].tag_flag_ad = DAT_P1_AD
 P_info[1].tag_flag_ad = DAT_P1_AD
@@ -93,7 +101,7 @@ P_info[1].hitstop_ad = DAT_P1_AD + 0x162 + PLR_STRUCT_SIZE
 P_info[2].hitstop_ad = DAT_P1_AD + 0x162 + PLR_STRUCT_SIZE * 2
 P_info[3].hitstop_ad = DAT_P1_AD + 0x162 + PLR_STRUCT_SIZE * 3
 
-P_info[0].anten_stop_ad = DAT_P1_AD + 0x731
-P_info[1].anten_stop_ad = DAT_P1_AD + 0x731 + PLR_STRUCT_SIZE
-P_info[2].anten_stop_ad = DAT_P1_AD + 0x731 + PLR_STRUCT_SIZE * 2
-P_info[3].anten_stop_ad = DAT_P1_AD + 0x731 + PLR_STRUCT_SIZE * 3
+P_info[0].anten_stop_ad = 0x158908
+P_info[1].anten_stop_ad = 0x158908 + PLR_STRUCT_SIZE
+P_info[2].anten_stop_ad = 0x158908 + PLR_STRUCT_SIZE * 2
+P_info[3].anten_stop_ad = 0x158908 + PLR_STRUCT_SIZE * 3
