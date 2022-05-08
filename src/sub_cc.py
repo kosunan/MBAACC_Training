@@ -272,21 +272,21 @@ def view_st():
 
 
 def advantage_calc():
-    if cfg.p1.hit == 0 and cfg.p2.hit == 0 and cfg.p1.motion_type == 0 and cfg.p2.motion_type == 0:
+    if cfg.p1.hit == 0 and cfg.p2.hit == 0 and cfg.p1.motion == 0 and cfg.p2.motion == 0:
         cfg.DataFlag1 = 0
 
-    if (cfg.p1.hit != 0 or cfg.p1.motion_type != 0) and (cfg.p2.hit != 0 or cfg.p2.motion_type != 0):
+    if (cfg.p1.hit != 0 or cfg.p1.motion != 0) and (cfg.p2.hit != 0 or cfg.p2.motion != 0):
         cfg.DataFlag1 = 1
         cfg.yuuriF = 0
 
     if cfg.DataFlag1 == 1:
 
         # 有利フレーム検証
-        if (cfg.p1.hit == 0 and cfg.p1.motion_type == 0) and (cfg.p2.hit != 0 or cfg.p2.motion_type != 0):
+        if (cfg.p1.hit == 0 and cfg.p1.motion == 0) and (cfg.p2.hit != 0 or cfg.p2.motion != 0):
             cfg.yuuriF += 1
 
         # 不利フレーム検証
-        if (cfg.p1.hit != 0 or cfg.p1.motion_type != 0) and (cfg.p2.hit == 0 and cfg.p2.motion_type == 0):
+        if (cfg.p1.hit != 0 or cfg.p1.motion != 0) and (cfg.p2.hit == 0 and cfg.p2.motion == 0):
             cfg.yuuriF -= 1
 
 
@@ -319,22 +319,39 @@ def bar_add():
             cfg.Bar_num = 0
             cfg.Bar80_flag = 1
 
+
+    hit_number = [904, 900, 901,
+                  906, 29, 26,
+                  903, 907, 30,
+                  350, 17, 18]
+
     for n in cfg.p_info:
+
+        for m in hit_number:
+            if n.motion_type == m:
+                n.hit = 1
+                break
+
         num = "0"
         num = str(n.motion)
         if n.b_atk.raw != b'\x00':  # 攻撃判定を出しているとき
             font = atk
         elif n.step_inv != 0:  # バックステップ無敵中
             font = "\x1b[48;5;015m"
+
+
         elif n.motion != 0:  # モーション途中
-            font = mot
-        elif n.hit != 0:  # ガードorヒット硬直中
-            font = grd
-            num = str(n.hit)
+
+            if n.hit != 0:  # ガードorヒット硬直中
+                font = grd
+                # num = str(n.motion)
+            else:
+                font = mot
+
 
         elif n.motion == 0:  # 何もしていないとき
             font = fre
-            num = str(n.motion_type)
+            # num = str(n.motion_type)
         else:  # いずれにも当てはまらないとき
             font = non
 
@@ -410,13 +427,6 @@ def b_unpack(d_obj):
 
 
 def get_values():
-    negligible_number = [0, 10, 11, 12,
-                         13, 14, 15, 18,
-                         20, 16, 594, 17]
-    hit_number = [904, 900, 901,
-                  906, 29, 26,
-                  903, 907, 30,
-                  350]
 
     cfg.fn1_key = b_unpack(cfg.b_fn1_key)
     cfg.fn2_key = b_unpack(cfg.b_fn2_key)
@@ -426,6 +436,9 @@ def get_values():
     cfg.stop = b_unpack(cfg.b_stop)
     tagCharacterCheck()
 
+    negligible_number = [0, 10, 11, 12,
+                         13, 14, 15,
+                         20, 16, 594]
     for n in cfg.p_info:
         n.x = b_unpack(n.b_x)
         if n.motion_type != 0:
@@ -449,20 +462,12 @@ def get_values():
         n.moon = b_unpack(n.b_moon)
         n.ukemi1 = b_unpack(n.b_ukemi1)
         n.ukemi2 = b_unpack(n.b_ukemi2)
+
         for m in negligible_number:
             if n.motion_type == m:
                 n.motion = 0
                 n.motion_type = 0
                 break
-
-        for m in hit_number:
-            if n.motion_type == m:
-                n.hit = 1
-                n.motion_type = 0
-                n.motion = 0
-                break
-
-
 
 def view():
     END = '\x1b[0m' + '\x1b[49m' + '\x1b[K' + '\x1b[1E'
@@ -505,17 +510,27 @@ def view():
 
     if kyori < 0:
         kyori = kyori * -1
-    kyori = kyori / (18724 * 2)
+    kyori = kyori / (21845)
     kyori = str(kyori)[:5]
 
     state_str = '\x1b[1;1H' + '\x1b[?25l'
 
-    state_str += '1P|Position' + x_p1
-    state_str += ' FirstActive' + act_P1
-    state_str += ' Overall' + zen_P1
-    state_str += ' Circuit' + gauge_p1 + '%'
+    state_str += f'1P|Position{x_p1}'
+    state_str += f' FirstActive{act_P1}'
+    state_str += f' Overall{zen_P1}'
+    state_str += f' Circuit{gauge_p1}%'
 
-    state_str += '   [F1]Reset [F2]Save [F3]Moon switch [F4]Max damage ini' + END
+    if keyboard.is_pressed("F1"):
+        f1 = '  \x1b[007m' + '[F1]Reset' + '\x1b[0m'
+    else:
+        f1 = '  [F1]Reset'
+
+    if keyboard.is_pressed("F2"):
+        f2 = '  \x1b[007m' + '[F2]Save state' + '\x1b[0m'
+    else:
+        f2 = '  [F2]Save state'
+
+    state_str += '   ' + f1 + f2 +END
 
     state_str += '2P|Position' + x_p2
     state_str += ' FirstActive' + act_P2
@@ -524,8 +539,6 @@ def view():
     state_str += END
 
     state_str += '  |Advantage' + yuuriF
-    state_str += ' Proration' + "%"
-    state_str += ' Untec'
     state_str += '  Range ' + kyori + 'M' + END
 
     state_str += '  | 1 2 3 4 5 6 7 8 91011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980' + END

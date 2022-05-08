@@ -37,9 +37,10 @@ def function_key():
     # セーブデータリセット
     if keyboard.is_pressed("F1"):
         if flag1 == 0:
-            flag1 = 1
             save_flag = 0
-
+        elif flag1 == 100:
+            sub.MAX_Damage_ini()
+        flag1 += 1
     # 状況記憶
     elif keyboard.is_pressed("F2") or cfg.fn1_key == 1 or cfg.fn1_key == 3:
         if flag1 == 0:
@@ -56,11 +57,7 @@ def function_key():
                 sub.situationReset()
             sub.w_mem(ad.COMB_AFTER_TIMER_AD, b'\xFF')
 
-    # 最大ダメージ初期化
-    elif keyboard.is_pressed("F4"):
-        if flag1 == 0:
-            flag1 = 1
-        sub.MAX_Damage_ini()
+
 
     # デバッグ表示
     elif (keyboard.is_pressed("9")) and (keyboard.is_pressed("0")):
@@ -70,7 +67,7 @@ def function_key():
             cfg.debug_flag = 0
         time.sleep(0.3)
 
-    elif flag1 == 1:
+    elif flag1 >= 1:
         flag1 = 0
         sub.play()
 
