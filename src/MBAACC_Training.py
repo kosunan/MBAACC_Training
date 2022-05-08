@@ -114,7 +114,7 @@ while 1:
         # ゲーム状況の取得
         sub.view_st()
 
-        if cfg_cc.f_timer <= 0:
+        if cfg_cc.f_timer == 1:
             sub.bar_ini()
 
             if save_flag == 1:

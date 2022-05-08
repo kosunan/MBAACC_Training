@@ -63,8 +63,8 @@ P_info[3].motion_type_ad = DAT_P1_AD + PLR_STRUCT_SIZE * 3
 
 P_info[0].motion_ad = 0x157FC0
 P_info[1].motion_ad = 0x1581CC
-P_info[2].motion_ad = DAT_P1_AD
-P_info[3].motion_ad = DAT_P1_AD
+P_info[2].motion_ad = 0x157FC0
+P_info[3].motion_ad = 0x1581CC
 
 P_info[0].atk_ad = DAT_P1_AD + 0x314
 P_info[1].atk_ad = DAT_P1_AD + 0x314 + PLR_STRUCT_SIZE
@@ -91,10 +91,10 @@ P_info[1].gauge_ad = 0x155210 + PLR_STRUCT_SIZE
 P_info[2].gauge_ad = 0x155210 + PLR_STRUCT_SIZE * 2
 P_info[3].gauge_ad = 0x155210 + PLR_STRUCT_SIZE * 3
 
-P_info[0].tag_flag_ad = DAT_P1_AD
-P_info[1].tag_flag_ad = DAT_P1_AD
-P_info[2].tag_flag_ad = DAT_P1_AD
-P_info[3].tag_flag_ad = DAT_P1_AD
+P_info[0].tag_flag_ad = 0x155302
+P_info[1].tag_flag_ad = 0x155302 + PLR_STRUCT_SIZE
+P_info[2].tag_flag_ad = 0x155302 + PLR_STRUCT_SIZE * 2
+P_info[3].tag_flag_ad = 0x155302 + PLR_STRUCT_SIZE * 3
 
 P_info[0].hitstop_ad = DAT_P1_AD + 0x162
 P_info[1].hitstop_ad = DAT_P1_AD + 0x162 + PLR_STRUCT_SIZE
@@ -103,5 +103,5 @@ P_info[3].hitstop_ad = DAT_P1_AD + 0x162 + PLR_STRUCT_SIZE * 3
 
 P_info[0].anten_stop_ad = 0x158908
 P_info[1].anten_stop_ad = 0x158908 + PLR_STRUCT_SIZE
-P_info[2].anten_stop_ad = 0x158908 + PLR_STRUCT_SIZE * 2
-P_info[3].anten_stop_ad = 0x158908 + PLR_STRUCT_SIZE * 3
+P_info[2].anten_stop_ad = 0x158908
+P_info[3].anten_stop_ad = 0x158908 + PLR_STRUCT_SIZE

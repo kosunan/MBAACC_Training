@@ -107,20 +107,46 @@ def ex_cmd_enable():
         return False
     return True
 
+
 def situationReset():
 
     # 状況をリセット
     w_mem(ad.RESET_AD, b'\xFF')
+
 
 def pause():
 
     # 一時停止
     w_mem(ad.ANTEN_STOP_AD, b'\xff')
 
+
 def play():
 
     # 再生
     w_mem(ad.ANTEN_STOP_AD, b'\x00')
+
+
+def tagCharacterCheck():
+    cfg.P1 = cfg.P_info[0]
+    cfg.P2 = cfg.P_info[1]
+    cfg.P3 = cfg.P_info[2]
+    cfg.P4 = cfg.P_info[3]
+
+    if cfg.P1.tag_flag == 0:
+        cfg.p_info[0] = cfg.p1 = cfg.P1
+        cfg.p_info[2] = cfg.p3 = cfg.P3
+
+    elif cfg.P1.tag_flag == 1:
+        cfg.p_info[0] = cfg.p1 = cfg.P3
+        cfg.p_info[2] = cfg.p3 = cfg.P1
+
+    if cfg.P2.tag_flag == 0:
+        cfg.p_info[1] = cfg.p2 = cfg.P2
+        cfg.p_info[3] = cfg.p4 = cfg.P4
+
+    elif cfg.P2.tag_flag == 1:
+        cfg.p_info[1] = cfg.p2 = cfg.P4
+        cfg.p_info[3] = cfg.p4 = cfg.P2
 
 
 def situationCheck():
@@ -142,6 +168,7 @@ def situationCheck():
         r_mem(n.x_ad, n.b_x)
         r_mem(n.stop_ad, n.b_stop)
         r_mem(n.step_inv_ad, n.b_step_inv)
+        r_mem(n.tag_flag_ad, n.b_tag_flag)
     r_mem(ad.DAMAGE_AD, cfg.b_damage)
 
 
@@ -153,19 +180,18 @@ def situationMem():
     for n in cfg.P_info:
         r_mem(n.dmp_ad, n.b_dmp)
 
+    r_mem(ad.OBJ_AD, save.b_obj)
+    r_mem(ad.STOP_SITUATION_AD, save.b_stop_situation)
 
+    r_mem(ad.ANTEN_STOP_AD, save.b_stop)
+    r_mem(ad.DAMAGE_AD, save.b_damage)
+    r_mem(ad.DAMAGE2_AD, save.b_damage2)
 
-    r_mem( ad.OBJ_AD, save.b_obj)
-    r_mem( ad.STOP_SITUATION_AD, save.b_stop_situation)
+    r_mem(ad.CAM1_X_AD, save.b_cam1_x)
+    r_mem(ad.CAM1_Y_AD, save.b_cam2_x)
+    r_mem(ad.CAM2_X_AD, save.b_cam1_y)
+    r_mem(ad.CAM2_Y_AD, save.b_cam2_y)
 
-    r_mem( ad.ANTEN_STOP_AD, save.b_stop)
-    r_mem( ad.DAMAGE_AD, save.b_damage)
-    r_mem( ad.DAMAGE2_AD, save.b_damage2)
-
-    r_mem( ad.CAM1_X_AD, save.b_cam1_x)
-    r_mem( ad.CAM1_Y_AD, save.b_cam2_x)
-    r_mem( ad.CAM2_X_AD, save.b_cam1_y)
-    r_mem( ad.CAM2_Y_AD, save.b_cam2_y)
 
 def situationWrit():
     # 状況を再現
@@ -174,17 +200,17 @@ def situationWrit():
     for n in cfg.P_info:
         w_mem(n.dmp_ad, n.b_dmp)
 
-    w_mem( ad.OBJ_AD, save.b_obj)
-    w_mem( ad.STOP_SITUATION_AD, save.b_stop_situation)
+    w_mem(ad.OBJ_AD, save.b_obj)
+    w_mem(ad.STOP_SITUATION_AD, save.b_stop_situation)
 
-    w_mem( ad.ANTEN_STOP_AD, save.b_stop)
-    w_mem( ad.DAMAGE_AD, save.b_damage)
-    w_mem( ad.DAMAGE2_AD, save.b_damage2)
+    w_mem(ad.ANTEN_STOP_AD, save.b_stop)
+    w_mem(ad.DAMAGE_AD, save.b_damage)
+    w_mem(ad.DAMAGE2_AD, save.b_damage2)
 
-    w_mem( ad.CAM1_X_AD, save.b_cam1_x)
-    w_mem( ad.CAM1_Y_AD, save.b_cam2_x)
-    w_mem( ad.CAM2_X_AD, save.b_cam1_y)
-    w_mem( ad.CAM2_Y_AD, save.b_cam2_y)
+    w_mem(ad.CAM1_X_AD, save.b_cam1_x)
+    w_mem(ad.CAM1_Y_AD, save.b_cam2_x)
+    w_mem(ad.CAM2_X_AD, save.b_cam1_y)
+    w_mem(ad.CAM2_Y_AD, save.b_cam2_y)
 
 
 def MAX_Damage_ini():
@@ -240,8 +266,6 @@ def view_st():
     elif (cfg.p1.hitstop == 0 or cfg.p2.hitstop == 0):
         cfg.hitstop = 0
 
-
-
     # バー追加処理
     if cfg.Bar_flag == 1:
         bar_add()
@@ -296,25 +320,21 @@ def bar_add():
             cfg.Bar80_flag = 1
 
     for n in cfg.p_info:
-        num = ""
-
+        num = "0"
+        num = str(n.motion)
         if n.b_atk.raw != b'\x00':  # 攻撃判定を出しているとき
             font = atk
         elif n.step_inv != 0:  # バックステップ無敵中
             font = "\x1b[48;5;015m"
-
         elif n.motion != 0:  # モーション途中
             font = mot
-
         elif n.hit != 0:  # ガードorヒット硬直中
             font = grd
-
-        elif n.motion_type != 0:  # ガードできないとき
-            font = nog
+            num = str(n.hit)
 
         elif n.motion == 0:  # 何もしていないとき
             font = fre
-
+            num = str(n.motion_type)
         else:  # いずれにも当てはまらないとき
             font = non
 
@@ -328,15 +348,6 @@ def bar_add():
         # 起き上がり中
         if n.motion_type == 32 or n.motion_type == 33:
             font = "\x1b[38;5;255m" + "\x1b[48;5;055m"
-
-        if n.motion != 0:
-            num = str(n.motion)
-        else:
-            font = fre
-            num = str(n.motion_type)
-
-        if n.hit != 0:
-            num = str(n.hit)
 
         if num == '0' and cfg.DataFlag1 == 1:
             if n == cfg.p_info[0] or n == cfg.p_info[1]:
@@ -413,8 +424,9 @@ def get_values():
     cfg.dummy_status = b_unpack(cfg.b_dummy_status_ad)
     cfg.recording_mode = b_unpack(cfg.b_recording_mode_ad)
     cfg.stop = b_unpack(cfg.b_stop)
+    tagCharacterCheck()
 
-    for n in cfg.P_info:
+    for n in cfg.p_info:
         n.x = b_unpack(n.b_x)
         if n.motion_type != 0:
             n.motion_type_old = n.motion_type
@@ -424,7 +436,7 @@ def get_values():
         n.atk = b_unpack(n.b_atk)
         n.inv = b_unpack(n.b_inv)
         n.step_inv = b_unpack(n.b_step_inv)
-
+        n.tag_flag = b_unpack(n.b_tag_flag)
         n.hitstop_old = n.hitstop
         n.hitstop = b_unpack(n.b_hitstop)
         n.hit = b_unpack(n.b_hit)
@@ -450,11 +462,6 @@ def get_values():
                 n.motion = 0
                 break
 
-    cfg.p_info = cfg.P_info
-    cfg.p1 = cfg.P_info[0]
-    cfg.p2 = cfg.P_info[1]
-    cfg.p3 = cfg.P_info[2]
-    cfg.p4 = cfg.P_info[3]
 
 
 def view():
@@ -574,10 +581,12 @@ def determineReset():
     if bar_ini_flag == 1:
         bar_ini()
 
+
 def mode_check():
     r_mem(ad.GAME_MODE_AD, cfg.b_game_mode)
     cfg.game_mode = b_unpack(cfg.b_game_mode)
-    
+
+
 def timer_check():
     r_mem(ad.TIMER_AD, cfg.b_timer)
     cfg.f_timer = b_unpack(cfg.b_timer)
