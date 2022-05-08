@@ -127,7 +127,7 @@ def situationCheck():
     # 状況チェック
     r_mem(ad.FN1_KEY_AD, cfg.b_fn1_key)
     r_mem(ad.FN2_KEY_AD, cfg.b_fn2_key)
-    r_mem(ad.GAME_MODE_AD, cfg.b_game_mode)
+
     r_mem(ad.DUMMY_STATUS_AD, cfg.b_dummy_status_ad)
     r_mem(ad.RECORDING_MODE_AD, cfg.b_recording_mode_ad)
     r_mem(ad.ANTEN_STOP_AD, cfg.b_stop)
@@ -574,7 +574,10 @@ def determineReset():
     if bar_ini_flag == 1:
         bar_ini()
 
-
+def mode_check():
+    r_mem(ad.GAME_MODE_AD, cfg.b_game_mode)
+    cfg.game_mode = b_unpack(cfg.b_game_mode)
+    
 def timer_check():
     r_mem(ad.TIMER_AD, cfg.b_timer)
     cfg.f_timer = b_unpack(cfg.b_timer)

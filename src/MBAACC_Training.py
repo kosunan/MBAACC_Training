@@ -7,7 +7,7 @@ import keyboard
 import ad_cc
 import cfg_cc
 import sub_cc
-
+ad = ad_cc
 cfg = cfg_cc
 sub = sub_cc
 
@@ -54,6 +54,7 @@ def function_key():
             flag1 = 1
             if cfg.dummy_status == 5 or cfg.dummy_status == -1:
                 sub.situationReset()
+            sub.w_mem(ad.COMB_AFTER_TIMER_AD, b'\xFF')
 
     # 最大ダメージ初期化
     elif keyboard.is_pressed("F4"):
@@ -87,6 +88,12 @@ while 1:
     time.sleep(0.003)
     fn1 = cfg.b_fn1_key.raw
     fn2 = cfg.b_fn2_key.raw
+    # MODEチェック
+    sub.mode_check()
+
+    if cfg.game_mode == 20:
+        save_flag = 0
+
     function_key()
 
     # タイマーチェック
