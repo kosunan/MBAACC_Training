@@ -5,6 +5,7 @@ bar_range = 80
 
 class Character_info:
     def __init__(self):
+        self.dmp_ad = 0x00
         self.anten_stop_ad = 0x00
         self.anten_stop2_ad = 0x00
         self.atk_ad = 0x00
@@ -25,6 +26,7 @@ class Character_info:
         self.x_ad = 0x00
         self.stop_ad = 0x00
 
+        self.b_dmp = create_string_buffer(971)
         self.b_anten_stop = create_string_buffer(1)
         self.b_anten_stop2 = create_string_buffer(4)
         self.b_atk = create_string_buffer(1)
@@ -78,6 +80,7 @@ class Character_info:
         self.barlist_2 = list(range(bar_range))
         self.format = ''
 
+
 P_info = [Character_info(), Character_info(), Character_info(), Character_info()]
 p_info = [Character_info(), Character_info(), Character_info(), Character_info()]
 for info1, info2 in zip(P_info, p_info):
@@ -101,13 +104,18 @@ for n in range(bar_range):
 
 b_cam = create_string_buffer(1500)
 b_damage = create_string_buffer(4)
+b_damage2 = create_string_buffer(4)
+
 b_timer = create_string_buffer(4)
 
 b_dmy_timer = create_string_buffer(4)
-b_fn1_key= create_string_buffer(1)
-b_fn2_key= create_string_buffer(1)
+b_fn1_key = create_string_buffer(1)
+b_fn2_key = create_string_buffer(1)
 temp = create_string_buffer(4)
 
+
+fn1_key = 0
+fn2_key = 0
 Bar_flag = 0
 Bar_num = 0
 DataFlag1 = 1
@@ -133,7 +141,11 @@ b_game_mode = create_string_buffer(1)
 b_dummy_status_ad = create_string_buffer(1)
 b_recording_mode_ad = create_string_buffer(1)
 b_stop = create_string_buffer(2)
-stop=0
+
+dummy_status = 0
+recording_mode = 0
+
+stop = 0
 hitstop = 0
 reset_flag = 0
 base_ad = 0
