@@ -31,7 +31,6 @@ ANTEN_STOP_AD = 0x162A48  # 全体停止
 TRAINING_PAUSE_AD = 0x162A64  # メニュー画面開いているとき
 MAX_DAMAGE_AD = 0x157E0C
 
-
 OBJ_AD = 0x27BD70  # オブジェクトデータ開始位置
 STOP_SITUATION_AD = 0x158600  # 停止状況データ開始位置
 
@@ -66,10 +65,10 @@ P_info[1].motion_ad = 0x1581CC
 P_info[2].motion_ad = 0x157FC0
 P_info[3].motion_ad = 0x1581CC
 
-P_info[0].atk_ad = DAT_P1_AD + 0x314
-P_info[1].atk_ad = DAT_P1_AD + 0x314 + PLR_STRUCT_SIZE
-P_info[2].atk_ad = DAT_P1_AD + 0x314 + PLR_STRUCT_SIZE * 2
-P_info[3].atk_ad = DAT_P1_AD + 0x314 + PLR_STRUCT_SIZE * 3
+P_info[0].atk_ad = 0x155454
+P_info[1].atk_ad = 0x155454 + PLR_STRUCT_SIZE
+P_info[2].atk_ad = 0x155454 + PLR_STRUCT_SIZE * 2
+P_info[3].atk_ad = 0x155454 + PLR_STRUCT_SIZE * 3
 
 P_info[0].inv_ad = DAT_P1_AD
 P_info[1].inv_ad = DAT_P1_AD
@@ -100,6 +99,11 @@ P_info[0].hitstop_ad = DAT_P1_AD + 0x162
 P_info[1].hitstop_ad = DAT_P1_AD + 0x162 + PLR_STRUCT_SIZE
 P_info[2].hitstop_ad = DAT_P1_AD + 0x162 + PLR_STRUCT_SIZE * 2
 P_info[3].hitstop_ad = DAT_P1_AD + 0x162 + PLR_STRUCT_SIZE * 3
+
+# P_info[0].seeld_ad = 0x27D150
+# P_info[1].seeld_ad = 0x27D150 + PLR_STRUCT_SIZE
+# P_info[2].seeld_ad = 0x27D150 + PLR_STRUCT_SIZE * 2
+# P_info[3].seeld_ad = 0x27D150 + PLR_STRUCT_SIZE * 3
 
 P_info[0].anten_stop_ad = 0x158908
 P_info[1].anten_stop_ad = 0x158908 + PLR_STRUCT_SIZE

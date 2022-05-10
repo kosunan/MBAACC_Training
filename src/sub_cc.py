@@ -165,6 +165,7 @@ def situationCheck():
         r_mem(n.hitstop_ad, n.b_hitstop)
         r_mem(n.motion_ad, n.b_motion)
         r_mem(n.motion_type_ad, n.b_motion_type)
+        r_mem(n.seeld_ad, n.b_seeld)
         r_mem(n.x_ad, n.b_x)
         r_mem(n.stop_ad, n.b_stop)
         r_mem(n.step_inv_ad, n.b_step_inv)
@@ -230,12 +231,8 @@ def view_st():
 
     # キャラの状況推移表示
     if (
-        cfg.p1.motion_type != 0 or
-        cfg.p2.motion_type != 0 or
-        cfg.p1.hitstop != 0 or
-        cfg.p2.hitstop != 0 or
-        cfg.p1.hit != 0 or
-        cfg.p2.hit != 0
+        cfg.p1.motion != 0 or cfg.p1.hitstop != 0 or cfg.p1.hit != 0 or
+        cfg.p2.motion != 0 or cfg.p2.hitstop != 0 or cfg.p2.hit != 0
     ):
         cfg.reset_flag = 0
         cfg.Bar_flag = 1
@@ -319,7 +316,6 @@ def bar_add():
             cfg.Bar_num = 0
             cfg.Bar80_flag = 1
 
-
     hit_number = [904, 900, 901,
                   906, 29, 26,
                   903, 907, 30,
@@ -334,11 +330,10 @@ def bar_add():
 
         num = "0"
         num = str(n.motion)
-        if n.b_atk.raw != b'\x00':  # 攻撃判定を出しているとき
+        if n.atk != 0:  # 攻撃判定を出しているとき
             font = atk
         elif n.step_inv != 0:  # バックステップ無敵中
             font = "\x1b[48;5;015m"
-
 
         elif n.motion != 0:  # モーション途中
 
@@ -347,7 +342,6 @@ def bar_add():
                 # num = str(n.motion)
             else:
                 font = mot
-
 
         elif n.motion == 0:  # 何もしていないとき
             font = fre
@@ -362,9 +356,14 @@ def bar_add():
             elif n.motion == 0:
                 n.motion_type = 0
                 font = fre
+
         # 起き上がり中
         if n.motion_type == 32 or n.motion_type == 33:
             font = "\x1b[38;5;255m" + "\x1b[48;5;055m"
+
+        # # シールド中
+        # if n.seeld == 1:
+        #     font = "\x1b[38;5;255m" + "\x1b[48;5;006m"
 
         if num == '0' and cfg.DataFlag1 == 1:
             if n == cfg.p_info[0] or n == cfg.p_info[1]:
@@ -457,17 +456,19 @@ def get_values():
         n.anten_stop = b_unpack(n.b_anten_stop)
         n.anten_stop2_old = n.anten_stop2
         n.anten_stop2 = b_unpack(n.b_anten_stop2)
+        n.seeld = b_unpack(n.b_seeld)
 
         n.gauge = b_unpack(n.b_gauge)
         n.moon = b_unpack(n.b_moon)
         n.ukemi1 = b_unpack(n.b_ukemi1)
         n.ukemi2 = b_unpack(n.b_ukemi2)
 
-        for m in negligible_number:
-            if n.motion_type == m:
-                n.motion = 0
-                n.motion_type = 0
-                break
+        # for m in negligible_number:
+        #     if n.motion_type == m:
+        #         n.motion = 0
+        #         n.motion_type = 0
+        #         break
+
 
 def view():
     END = '\x1b[0m' + '\x1b[49m' + '\x1b[K' + '\x1b[1E'
@@ -530,7 +531,7 @@ def view():
     else:
         f2 = '  [F2]Save state'
 
-    state_str += '   ' + f1 + f2 +END
+    state_str += '   ' + f1 + f2 + END
 
     state_str += '2P|Position' + x_p2
     state_str += ' FirstActive' + act_P2
