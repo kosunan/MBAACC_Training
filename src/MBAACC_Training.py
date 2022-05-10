@@ -57,8 +57,6 @@ def function_key():
                 sub.situationReset()
             sub.w_mem(ad.COMB_AFTER_TIMER_AD, b'\xFF')
 
-
-
     # デバッグ表示
     elif (keyboard.is_pressed("9")) and (keyboard.is_pressed("0")):
         if cfg.debug_flag == 0:
@@ -83,8 +81,7 @@ sub.get_base_addres(dict_pids)
 
 while 1:
     time.sleep(0.003)
-    fn1 = cfg.b_fn1_key.raw
-    fn2 = cfg.b_fn2_key.raw
+
     # MODEチェック
     sub.mode_check()
 
@@ -111,7 +108,7 @@ while 1:
         # ゲーム状況の取得
         sub.view_st()
 
-        if cfg_cc.f_timer == 1:
+        if cfg.f_timer == 1:
             sub.bar_ini()
 
             if save_flag == 1:
