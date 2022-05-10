@@ -102,9 +102,6 @@ while 1:
         # 各種数値の取得
         sub.situationCheck()
 
-        # 各種数値の取得
-        sub.get_values()
-
         # ゲーム状況の取得
         sub.view_st()
 

@@ -79,8 +79,20 @@ def get_base_addres(dict_pids):
     cfg.base_ad = unpack('q', b_baseAddr.raw)[0]
 
 
+def b_unpack(d_obj):
+    num = 0
+    num = len(d_obj)
+    if num == 1:
+        return unpack('b', d_obj.raw)[0]
+    elif num == 2:
+        return unpack('h', d_obj.raw)[0]
+    elif num == 4:
+        return unpack('l', d_obj.raw)[0]
+
+
 def r_mem(ad, b_obj):
     ReadMem(cfg.h_pro, ad + cfg.base_ad, b_obj, len(b_obj), None)
+    return b_unpack(b_obj)
 
 
 def w_mem(ad, b_obj):
@@ -108,29 +120,7 @@ def ex_cmd_enable():
     return True
 
 
-def situationReset():
-
-    # 状況をリセット
-    w_mem(ad.RESET_AD, b'\xFF')
-
-
-def pause():
-
-    # 一時停止
-    w_mem(ad.ANTEN_STOP_AD, b'\xff')
-
-
-def play():
-
-    # 再生
-    w_mem(ad.ANTEN_STOP_AD, b'\x00')
-
-
 def tagCharacterCheck():
-    cfg.P1 = cfg.P_info[0]
-    cfg.P2 = cfg.P_info[1]
-    cfg.P3 = cfg.P_info[2]
-    cfg.P4 = cfg.P_info[3]
 
     if cfg.P1.tag_flag == 0:
         cfg.p_info[0] = cfg.p1 = cfg.P1
@@ -151,26 +141,30 @@ def tagCharacterCheck():
 
 def situationCheck():
     # 状況チェック
-    r_mem(ad.FN1_KEY_AD, cfg.b_fn1_key)
-    r_mem(ad.FN2_KEY_AD, cfg.b_fn2_key)
+    cfg.fn1_key = r_mem(ad.FN1_KEY_AD, cfg.b_fn1_key)
+    cfg.fn2_key = r_mem(ad.FN2_KEY_AD, cfg.b_fn2_key)
 
-    r_mem(ad.DUMMY_STATUS_AD, cfg.b_dummy_status_ad)
-    r_mem(ad.RECORDING_MODE_AD, cfg.b_recording_mode_ad)
-    r_mem(ad.ANTEN_STOP_AD, cfg.b_stop)
-
+    cfg.dummy_status = r_mem(ad.DUMMY_STATUS_AD, cfg.b_dummy_status)
+    cfg.recording_mode = r_mem(ad.RECORDING_MODE_AD, cfg.b_recording_mode)
+    cfg.stop = r_mem(ad.ANTEN_STOP_AD, cfg.b_stop)
     for n in cfg.P_info:
-        r_mem(n.anten_stop_ad, n.b_anten_stop)
-        r_mem(n.atk_ad, n.b_atk)
-        r_mem(n.gauge_ad, n.b_gauge)
-        r_mem(n.hitstop_ad, n.b_hitstop)
-        r_mem(n.motion_ad, n.b_motion)
-        r_mem(n.motion_type_ad, n.b_motion_type)
-        r_mem(n.seeld_ad, n.b_seeld)
-        r_mem(n.x_ad, n.b_x)
-        r_mem(n.stop_ad, n.b_stop)
-        r_mem(n.step_inv_ad, n.b_step_inv)
-        r_mem(n.tag_flag_ad, n.b_tag_flag)
-    r_mem(ad.DAMAGE_AD, cfg.b_damage)
+        n.anten_stop = r_mem(n.anten_stop_ad, n.b_anten_stop)
+        n.atk = r_mem(n.atk_ad, n.b_atk)
+        n.gauge = r_mem(n.gauge_ad, n.b_gauge)
+        n.hitstop = r_mem(n.hitstop_ad, n.b_hitstop)
+        n.hit = 0
+        n.motion = r_mem(n.motion_ad, n.b_motion)
+        if n.motion_type != 0:
+            n.motion_type_old = n.motion_type
+
+        n.motion_type = r_mem(n.motion_type_ad, n.b_motion_type)
+        n.seeld = r_mem(n.seeld_ad, n.b_seeld)
+        n.x = r_mem(n.x_ad, n.b_x)
+        n.stop = r_mem(n.stop_ad, n.b_stop)
+        n.step_inv = r_mem(n.step_inv_ad, n.b_step_inv)
+        n.tag_flag = r_mem(n.tag_flag_ad, n.b_tag_flag)
+
+    tagCharacterCheck()
 
 
 def situationMem():
@@ -178,16 +172,14 @@ def situationMem():
     # 状況を記憶
     save.P_info = copy.deepcopy(cfg.P_info)
 
-    for n in cfg.P_info:
+    for n in save.P_info:
         r_mem(n.dmp_ad, n.b_dmp)
 
     r_mem(ad.OBJ_AD, save.b_obj)
     r_mem(ad.STOP_SITUATION_AD, save.b_stop_situation)
-
     r_mem(ad.ANTEN_STOP_AD, save.b_stop)
     r_mem(ad.DAMAGE_AD, save.b_damage)
     r_mem(ad.DAMAGE2_AD, save.b_damage2)
-
     r_mem(ad.CAM1_X_AD, save.b_cam1_x)
     r_mem(ad.CAM1_Y_AD, save.b_cam2_x)
     r_mem(ad.CAM2_X_AD, save.b_cam1_y)
@@ -196,18 +188,14 @@ def situationMem():
 
 def situationWrit():
     # 状況を再現
-    save.P_info = copy.deepcopy(cfg.P_info)
-
-    for n in cfg.P_info:
+    for n in save.P_info:
         w_mem(n.dmp_ad, n.b_dmp)
 
     w_mem(ad.OBJ_AD, save.b_obj)
     w_mem(ad.STOP_SITUATION_AD, save.b_stop_situation)
-
     w_mem(ad.ANTEN_STOP_AD, save.b_stop)
     w_mem(ad.DAMAGE_AD, save.b_damage)
     w_mem(ad.DAMAGE2_AD, save.b_damage2)
-
     w_mem(ad.CAM1_X_AD, save.b_cam1_x)
     w_mem(ad.CAM1_Y_AD, save.b_cam2_x)
     w_mem(ad.CAM2_X_AD, save.b_cam1_y)
@@ -230,10 +218,9 @@ def view_st():
     advantage_calc()
 
     # キャラの状況推移表示
-    if (
-        cfg.p1.motion != 0 or cfg.p1.hitstop != 0 or cfg.p1.hit != 0 or
-        cfg.p2.motion != 0 or cfg.p2.hitstop != 0 or cfg.p2.hit != 0
-    ):
+    if (cfg.p1.motion != 0 or cfg.p1.hitstop != 0 or cfg.p1.hit != 0 or
+            cfg.p2.motion != 0 or cfg.p2.hitstop != 0 or cfg.p2.hit != 0):
+
         cfg.reset_flag = 0
         cfg.Bar_flag = 1
         cfg.interval = 0
@@ -249,6 +236,88 @@ def view_st():
         if cfg.Bar80_flag == 0:
             cfg.Bar_flag = 1
 
+    if cfg.Bar_flag == 1:
+        stop_flame_calc()
+
+        if cfg.anten == 0 and cfg.hitstop <= 1:
+            cfg.Bar_num += 1
+            if cfg.Bar_num == cfg.bar_range:
+                cfg.Bar_num = 0
+                cfg.Bar80_flag = 1
+
+        # バー追加処理
+        bar_add()
+
+
+def firstActive_calc():
+
+    # 計測開始の確認
+    if cfg.p2.hitstop != 0 and cfg.p1.act_flag == 0 and cfg.p1.hit == 0:
+        cfg.p1.act = cfg.p1.zen
+        cfg.p1.act_flag = 1
+
+    if cfg.p1.hitstop != 0 and cfg.p2.act_flag == 0 and cfg.p2.hit == 0:
+        cfg.p2.act = cfg.p2.zen
+        cfg.p2.act_flag = 1
+
+    if cfg.p1.motion == 0 and cfg.p1.atk == 0:
+        cfg.p1.act_flag = 0
+
+    if cfg.p2.motion == 0 and cfg.p2.atk == 0:
+        cfg.p2.act_flag = 0
+
+
+def advantage_calc():
+    if cfg.p1.hit == 0 and cfg.p2.hit == 0 and cfg.p1.motion == 0 and cfg.p2.motion == 0:
+        cfg.DataFlag1 = 0
+
+    if (cfg.p1.hit != 0 or cfg.p1.motion != 0) and (cfg.p2.hit != 0 or cfg.p2.motion != 0):
+        cfg.DataFlag1 = 1
+        cfg.advantage_f = 0
+
+    if cfg.DataFlag1 == 1:
+
+        # 有利フレーム検証
+        if (cfg.p1.hit == 0 and cfg.p1.motion == 0) and (cfg.p2.hit != 0 or cfg.p2.motion != 0):
+            cfg.advantage_f += 1
+
+        # 不利フレーム検証
+        if (cfg.p1.hit != 0 or cfg.p1.motion != 0) and (cfg.p2.hit == 0 and cfg.p2.motion == 0):
+            cfg.advantage_f -= 1
+
+
+def overall_calc():
+    # 全体フレームの取得
+    if cfg.p1.motion != 0:
+        cfg.p1.zen = cfg.p1.motion
+
+    if cfg.p2.motion != 0:
+        cfg.p2.zen = cfg.p2.motion
+
+
+def determineReset():
+    bar_ini_flag = 0
+
+    if cfg.Bar80_flag == 1:
+        cfg.interval_time = 1
+
+    # インターバル後の初期化
+    if cfg.interval_time <= cfg.interval:
+        cfg.bar_ini_flag2 = 1
+
+    # 表示するときリセット
+    if cfg.bar_ini_flag2 == 1 and cfg.Bar_flag == 1:
+        bar_ini_flag = 1
+
+    cfg.old_mftp = cfg.p1.motion_type
+
+    # 即時リセット
+    if bar_ini_flag == 1:
+        bar_ini()
+
+
+def stop_flame_calc():
+
     # 暗転判定処理
     if cfg.stop != 0:
         cfg.anten += 1
@@ -263,112 +332,67 @@ def view_st():
     elif (cfg.p1.hitstop == 0 or cfg.p2.hitstop == 0):
         cfg.hitstop = 0
 
-    # バー追加処理
-    if cfg.Bar_flag == 1:
-        bar_add()
-
-
-def advantage_calc():
-    if cfg.p1.hit == 0 and cfg.p2.hit == 0 and cfg.p1.motion == 0 and cfg.p2.motion == 0:
-        cfg.DataFlag1 = 0
-
-    if (cfg.p1.hit != 0 or cfg.p1.motion != 0) and (cfg.p2.hit != 0 or cfg.p2.motion != 0):
-        cfg.DataFlag1 = 1
-        cfg.yuuriF = 0
-
-    if cfg.DataFlag1 == 1:
-
-        # 有利フレーム検証
-        if (cfg.p1.hit == 0 and cfg.p1.motion == 0) and (cfg.p2.hit != 0 or cfg.p2.motion != 0):
-            cfg.yuuriF += 1
-
-        # 不利フレーム検証
-        if (cfg.p1.hit != 0 or cfg.p1.motion != 0) and (cfg.p2.hit == 0 and cfg.p2.motion == 0):
-            cfg.yuuriF -= 1
-
-
-def overall_calc():
-    # 全体フレームの取得
-    if cfg.p1.motion != 0:
-        cfg.p1.zen = cfg.p1.motion
-
-    if cfg.p2.motion != 0:
-        cfg.p2.zen = cfg.p2.motion
-
 
 def bar_add():
 
     DEF = '\x1b[0m'
-
     FC_DEF = '\x1b[39m'
     BC_DEF = '\x1b[49m'
-
     atk = "\x1b[38;5;255m" + "\x1b[48;5;160m"
     mot = "\x1b[38;5;255m" + "\x1b[48;5;010m"
     grd = '\x1b[0m' + "\x1b[48;5;250m"
     nog = "\x1b[38;5;250m" + "\x1b[48;5;000m"
     fre = "\x1b[38;5;234m" + "\x1b[48;5;000m"
     non = "\x1b[38;5;148m" + "\x1b[48;5;201m"
+    inv = "\x1b[48;5;015m"
+    jmp = "\x1b[38;5;000m" + "\x1b[48;5;011m"
 
-    if cfg.anten == 0 and cfg.hitstop <= 1:
-        cfg.Bar_num += 1
-        if cfg.Bar_num == cfg.bar_range:
-            cfg.Bar_num = 0
-            cfg.Bar80_flag = 1
+    hit_number = [904, 900, 901, 906, 29, 26,
+                  903, 907, 30, 350, 17, 18]
 
-    hit_number = [904, 900, 901,
-                  906, 29, 26,
-                  903, 907, 30,
-                  350, 17, 18]
+    negligible_number = [0, 10, 11, 12, 13, 14, 15, 20, 16, 594]
+
+    jmp_number = [34, 35, 36, 37]
 
     for n in cfg.p_info:
 
-        for m in hit_number:
-            if n.motion_type == m:
-                n.hit = 1
-                break
+        if n.motion != 0:
+            num = str(n.motion)
+            font = mot
 
-        num = "0"
-        num = str(n.motion)
-        if n.atk != 0:  # 攻撃判定を出しているとき
-            font = atk
-        elif n.step_inv != 0:  # バックステップ無敵中
-            font = "\x1b[48;5;015m"
+            if n.atk != 0:  # 攻撃判定を出しているとき
+                font = atk
 
-        elif n.motion != 0:  # モーション途中
+            elif n.step_inv != 0:  # バックステップ無敵中
+                font = inv
 
-            if n.hit != 0:  # ガードorヒット硬直中
-                font = grd
-                # num = str(n.motion)
-            else:
-                font = mot
+            for list_a in hit_number:  # ヒットorガードモーション中
+                if n.motion_type == list_a:
+                    font = grd
+                    break
 
-        elif n.motion == 0:  # 何もしていないとき
+            for list_a in jmp_number:  # ジャンプ移行中
+                if n.motion_type == list_a:
+                    font = jmp
+                    break
+
+            if n.motion_type == 32 or n.motion_type == 33:  # 起き上がり中
+                font = "\x1b[38;5;255m" + "\x1b[48;5;055m"
+
+            # if n.seeld == 1:# シールド中
+            #     font = "\x1b[38;5;255m" + "\x1b[48;5;006m"
+
+        elif n.motion == 0:
+            num = str(n.motion_type)
             font = fre
-            # num = str(n.motion_type)
+
+            if cfg.DataFlag1 == 1:
+                if n == cfg.p_info[0] or n == cfg.p_info[1]:
+                    font = "\x1b[38;5;244m" + "\x1b[48;5;000m"
+                    num = str(abs(cfg.advantage_f))
+
         else:  # いずれにも当てはまらないとき
             font = non
-
-        # ジャンプ移行中
-        if n.motion_type == 34 or n.motion_type == 35 or n.motion_type == 36 or n.motion_type == 37:
-            if n.motion != 0:
-                font = "\x1b[38;5;000m" + "\x1b[48;5;011m"
-            elif n.motion == 0:
-                n.motion_type = 0
-                font = fre
-
-        # 起き上がり中
-        if n.motion_type == 32 or n.motion_type == 33:
-            font = "\x1b[38;5;255m" + "\x1b[48;5;055m"
-
-        # # シールド中
-        # if n.seeld == 1:
-        #     font = "\x1b[38;5;255m" + "\x1b[48;5;006m"
-
-        if num == '0' and cfg.DataFlag1 == 1:
-            if n == cfg.p_info[0] or n == cfg.p_info[1]:
-                font = "\x1b[38;5;244m" + "\x1b[48;5;000m"
-                num = str(abs(cfg.yuuriF))
 
         n.barlist_1[cfg.Bar_num] = font + num.rjust(2, " ")[-2:] + DEF
 
@@ -395,81 +419,6 @@ def bar_ini():
         cfg.st_barlist[n] = ""
 
 
-def firstActive_calc():
-    # 計測開始の確認
-    if cfg.p2.hitstop != 0 and cfg.p1.act_flag == 0 and cfg.p1.hit == 0:
-        cfg.p1.act = cfg.p1.zen
-        cfg.p1.act_flag = 1
-
-    if cfg.p1.hitstop != 0 and cfg.p2.act_flag == 0 and cfg.p2.hit == 0:
-        cfg.p2.act = cfg.p2.zen
-        cfg.p2.act_flag = 1
-
-    if cfg.p1.motion == 0 and cfg.p1.atk == 0:
-        cfg.p1.act_flag = 0
-
-    if cfg.p2.motion == 0 and cfg.p2.atk == 0:
-        cfg.p2.act_flag = 0
-
-
-def b_unpack(d_obj):
-    num = 0
-    num = len(d_obj)
-    if num == 1:
-        return unpack('b', d_obj.raw)[0]
-    elif num == 2:
-        return unpack('h', d_obj.raw)[0]
-    elif num == 4:
-        return unpack('l', d_obj.raw)[0]
-    else:
-        return 1000
-
-
-def get_values():
-
-    cfg.fn1_key = b_unpack(cfg.b_fn1_key)
-    cfg.fn2_key = b_unpack(cfg.b_fn2_key)
-    cfg.game_mode = b_unpack(cfg.b_game_mode)
-    cfg.dummy_status = b_unpack(cfg.b_dummy_status_ad)
-    cfg.recording_mode = b_unpack(cfg.b_recording_mode_ad)
-    cfg.stop = b_unpack(cfg.b_stop)
-    tagCharacterCheck()
-
-    negligible_number = [0, 10, 11, 12,
-                         13, 14, 15,
-                         20, 16, 594]
-    for n in cfg.p_info:
-        n.x = b_unpack(n.b_x)
-        if n.motion_type != 0:
-            n.motion_type_old = n.motion_type
-        n.motion_type = b_unpack(n.b_motion_type)
-
-        n.motion = b_unpack(n.b_motion)
-        n.atk = b_unpack(n.b_atk)
-        n.inv = b_unpack(n.b_inv)
-        n.step_inv = b_unpack(n.b_step_inv)
-        n.tag_flag = b_unpack(n.b_tag_flag)
-        n.hitstop_old = n.hitstop
-        n.hitstop = b_unpack(n.b_hitstop)
-        n.hit = b_unpack(n.b_hit)
-        n.noguard = b_unpack(n.b_noguard)
-        n.anten_stop = b_unpack(n.b_anten_stop)
-        n.anten_stop2_old = n.anten_stop2
-        n.anten_stop2 = b_unpack(n.b_anten_stop2)
-        n.seeld = b_unpack(n.b_seeld)
-
-        n.gauge = b_unpack(n.b_gauge)
-        n.moon = b_unpack(n.b_moon)
-        n.ukemi1 = b_unpack(n.b_ukemi1)
-        n.ukemi2 = b_unpack(n.b_ukemi2)
-
-        # for m in negligible_number:
-        #     if n.motion_type == m:
-        #         n.motion = 0
-        #         n.motion_type = 0
-        #         break
-
-
 def view():
     END = '\x1b[0m' + '\x1b[49m' + '\x1b[K' + '\x1b[1E'
     x_p1 = str(cfg.p1.x).rjust(8, " ")
@@ -484,8 +433,7 @@ def view():
     act_P1 = str(cfg.p1.act).rjust(3, " ")
     act_P2 = str(cfg.p2.act).rjust(3, " ")
 
-    # yuuriF = str(cfg.yuuriF).rjust(4, " ")
-    yuuriF = str(cfg.yuuriF).rjust(7, " ")
+    advantage_f = str(cfg.advantage_f).rjust(7, " ")
 
     kyori = cfg.p1.x - cfg.p2.x
 
@@ -539,7 +487,7 @@ def view():
     state_str += ' Circuit' + gauge_p2 + '%'
     state_str += END
 
-    state_str += '  |Advantage' + yuuriF
+    state_str += '  |Advantage' + advantage_f
     state_str += '  Range ' + kyori + 'M' + END
 
     state_str += '  | 1 2 3 4 5 6 7 8 91011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980' + END
@@ -568,32 +516,29 @@ def degug_view():
         debug_str_p1 += " stop " + str(cfg.stop).rjust(7, " ")
         debug_str_p1 += " dummy_status " + str(cfg.dummy_status).rjust(7, " ")
         debug_str_p1 += " fn2_key " + str(cfg.fn2_key).rjust(7, " ")
+        debug_str_p2 += " interval " + str(cfg.interval).rjust(7, " ")
+        debug_str_p2 += " Bar80_flag " + str(cfg.Bar80_flag).rjust(7, " ")
 
         print(debug_str_p1)
         print(debug_str_p2)
 
 
-def determineReset():
-    bar_ini_flag = 0
+def situationReset():
 
-    if cfg.Bar80_flag == 1:
-        cfg.interval_time = 1
+    # 状況をリセット
+    w_mem(ad.RESET_AD, b'\xff')
 
-    # インターバル後の初期化
-    if cfg.interval_time <= cfg.interval:
-        cfg.bar_ini_flag2 = 1
 
-    # 表示するときリセット
-    if cfg.bar_ini_flag2 == 1 and cfg.Bar_flag == 1:
-        bar_ini_flag = 1
+def pause():
 
-    cfg.interval2 += 1
+    # 一時停止
+    w_mem(ad.ANTEN_STOP_AD, b'\xff')
 
-    cfg.old_mftp = cfg.p1.motion_type
 
-    # 即時リセット
-    if bar_ini_flag == 1:
-        bar_ini()
+def play():
+
+    # 再生
+    w_mem(ad.ANTEN_STOP_AD, b'\x00')
 
 
 def mode_check():
