@@ -86,6 +86,8 @@ for info1, info2 in zip(P_info, p_info):
     for n in range(bar_range):
         info1.barlist_1[n] = ""
         info2.barlist_1[n] = ""
+        info1.barlist_2[n] = ""
+        info2.barlist_2[n] = ""
 
 P1 = P_info[0]
 P2 = P_info[1]
