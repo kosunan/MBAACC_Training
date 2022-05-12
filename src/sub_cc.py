@@ -51,15 +51,17 @@ def pidget():
     return dict_pids
 
 
-def get_base_addres(dict_pids):
+def get_base_addres():
     cfg.pid = 0
     while cfg.pid == 0:
+        dict_pids = pidget()
         try:
             cfg.pid = dict_pids["MBAA.exe"]
         except:
             os.system('cls')
             print("Waiting for MBAA to start")
-
+            time.sleep(0.2)
+            
     cfg.h_pro = OpenProcess(0x1F0FFF, False, cfg.pid)
 
     # MODULEENTRY32を取得
@@ -299,7 +301,7 @@ def determineReset():
     bar_ini_flag = 0
 
     if cfg.Bar80_flag == 1:
-        cfg.interval_time = 1
+        cfg.interval_time = 40
 
     # インターバル後の初期化
     if cfg.interval_time <= cfg.interval:
@@ -308,8 +310,6 @@ def determineReset():
     # 表示するときリセット
     if cfg.bar_ini_flag2 == 1 and cfg.Bar_flag == 1:
         bar_ini_flag = 1
-
-    cfg.old_mftp = cfg.p1.motion_type
 
     # 即時リセット
     if bar_ini_flag == 1:
@@ -395,6 +395,8 @@ def bar_add():
             font = non
 
         n.barlist_1[cfg.Bar_num] = font + num.rjust(2, " ")[-2:] + DEF
+        num = str(n.motion_type)
+        n.barlist_2[cfg.Bar_num] = font + num.rjust(2, " ")[-2:] + DEF
 
 
 def bar_ini():
@@ -403,6 +405,11 @@ def bar_ini():
     cfg.p2.Bar_1 = ""
     cfg.p3.Bar_1 = ""
     cfg.p4.Bar_1 = ""
+    cfg.p1.Bar_2 = ""
+    cfg.p2.Bar_2 = ""
+    cfg.p3.Bar_2 = ""
+    cfg.p4.Bar_2 = ""
+
     cfg.st_Bar = ""
     cfg.Bar_num = 0
     cfg.interval = 0
@@ -416,6 +423,12 @@ def bar_ini():
         cfg.p2.barlist_1[n] = ""
         cfg.p3.barlist_1[n] = ""
         cfg.p4.barlist_1[n] = ""
+
+        cfg.p1.barlist_2[n] = ""
+        cfg.p2.barlist_2[n] = ""
+        cfg.p3.barlist_2[n] = ""
+        cfg.p4.barlist_2[n] = ""
+
         cfg.st_barlist[n] = ""
 
 
@@ -441,7 +454,10 @@ def view():
     cfg.p2.Bar_1 = ""
     cfg.p3.Bar_1 = ""
     cfg.p4.Bar_1 = ""
-
+    cfg.p1.Bar_2 = ""
+    cfg.p2.Bar_2 = ""
+    cfg.p3.Bar_2 = ""
+    cfg.p4.Bar_2 = ""
     cfg.st_Bar = ""
 
     temp = cfg.Bar_num
@@ -451,6 +467,8 @@ def view():
         if temp == cfg.bar_range:
             temp = 0
         cfg.p1.Bar_1 += cfg.p1.barlist_1[temp]
+        cfg.p1.Bar_2 += cfg.p1.barlist_2[temp]
+
         cfg.p2.Bar_1 += cfg.p2.barlist_1[temp]
         cfg.p3.Bar_1 += cfg.p3.barlist_1[temp]
         cfg.p4.Bar_1 += cfg.p4.barlist_1[temp]
@@ -494,33 +512,39 @@ def view():
     state_str += '1P|' + cfg.p1.Bar_1 + END
     state_str += '2P|' + cfg.p2.Bar_1 + END
 
-    print(state_str)
-    degug_view()
-
-
-def degug_view():
     if cfg.debug_flag == 1:
-        # os.system('mode con: cols=166 lines=15')
-        debug_str_p1 = "f_timer " + str(cfg.f_timer).rjust(7, " ")
-        debug_str_p2 = "Bar_num " + str(cfg.Bar_num).rjust(7, " ")
+        state_str = degug_view(state_str)
 
-        debug_str_p1 += "motion_type " + str(cfg.p1.motion_type).rjust(7, " ")
-        debug_str_p2 += "motion_type " + str(cfg.p2.motion_type).rjust(7, " ")
-        debug_str_p1 += " motion " + str(cfg.p1.motion).rjust(7, " ")
-        debug_str_p2 += " motion " + str(cfg.p2.motion).rjust(7, " ")
-        debug_str_p1 += " anten_stop " + str(cfg.p1.anten_stop).rjust(7, " ")
-        debug_str_p2 += " anten_stop " + str(cfg.p2.anten_stop).rjust(7, " ")
-        debug_str_p1 += " hitstop " + str(cfg.p1.hitstop).rjust(7, " ")
-        debug_str_p2 += " hitstop " + str(cfg.p2.hitstop).rjust(7, " ")
-        debug_str_p1 += " anten " + str(cfg.anten).rjust(7, " ")
-        debug_str_p1 += " stop " + str(cfg.stop).rjust(7, " ")
-        debug_str_p1 += " dummy_status " + str(cfg.dummy_status).rjust(7, " ")
-        debug_str_p1 += " fn2_key " + str(cfg.fn2_key).rjust(7, " ")
-        debug_str_p2 += " interval " + str(cfg.interval).rjust(7, " ")
-        debug_str_p2 += " Bar80_flag " + str(cfg.Bar80_flag).rjust(7, " ")
+    print(state_str)
 
-        print(debug_str_p1)
-        print(debug_str_p2)
+
+def degug_view(state_str):
+    END = '\x1b[0m' + '\x1b[49m' + '\x1b[K' + '\x1b[1E'
+    # os.system('mode con: cols=166 lines=15')
+    debug_str_p1 = "f_timer " + str(cfg.f_timer).rjust(7, " ")
+    debug_str_p2 = "Bar_num " + str(cfg.Bar_num).rjust(7, " ")
+
+    debug_str_p1 += "motion_type " + str(cfg.p1.motion_type).rjust(7, " ")
+    debug_str_p2 += "motion_type " + str(cfg.p2.motion_type).rjust(7, " ")
+    debug_str_p1 += " motion " + str(cfg.p1.motion).rjust(7, " ")
+    debug_str_p2 += " motion " + str(cfg.p2.motion).rjust(7, " ")
+    debug_str_p1 += " anten_stop " + str(cfg.p1.anten_stop).rjust(7, " ")
+    debug_str_p2 += " anten_stop " + str(cfg.p2.anten_stop).rjust(7, " ")
+    debug_str_p1 += " hitstop " + str(cfg.p1.hitstop).rjust(7, " ")
+    debug_str_p2 += " hitstop " + str(cfg.p2.hitstop).rjust(7, " ")
+    debug_str_p1 += " anten " + str(cfg.anten).rjust(7, " ")
+    debug_str_p1 += " stop " + str(cfg.stop).rjust(7, " ")
+    debug_str_p1 += " dummy_status " + str(cfg.dummy_status).rjust(7, " ")
+    debug_str_p1 += " fn2_key " + str(cfg.fn2_key).rjust(7, " ")
+    debug_str_p2 += " interval " + str(cfg.interval).rjust(7, " ")
+    debug_str_p2 += " Bar80_flag " + str(cfg.Bar80_flag).rjust(7, " ")
+
+    state_str += debug_str_p1 + END
+    state_str += debug_str_p2 + END
+    state_str += '1P|' + cfg.p1.Bar_2 + END
+    state_str += '2P|' + cfg.p2.Bar_2 + END
+
+    return state_str
 
 
 def situationReset():
