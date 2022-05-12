@@ -13,13 +13,11 @@ sub = sub_cc
 
 sub.ex_cmd_enable()
 
-if cfg.debug_flag == 1:
-    os.system('mode con: cols=166 lines=15')
-else:
-    os.system('mode con: cols=166 lines=10')
+
+os.system('mode con: cols=166 lines=10')
 
 os.system('cls')
-os.system('title MBAACC_Training 1.2')
+os.system('title MBAACC_Training 1.2.1')
 print('\x1b[1;1H' + '\x1b[?25l')
 windll.winmm.timeBeginPeriod(1)  # タイマー精度を1msec単位にする
 
@@ -61,8 +59,12 @@ def function_key():
     elif (keyboard.is_pressed("9")) and (keyboard.is_pressed("0")):
         if cfg.debug_flag == 0:
             cfg.debug_flag = 1
+            os.system('mode con: cols=166 lines=15')
+
         elif cfg.debug_flag == 1:
             cfg.debug_flag = 0
+            os.system('mode con: cols=166 lines=10')
+
         time.sleep(0.3)
 
     elif flag1 >= 1:
@@ -74,10 +76,9 @@ def function_key():
 # メイン関数
 ###############################################################
 # 実行中のすべてのＩＤ＋プロセス名取得
-dict_pids = sub.pidget()
 
 # ベースアドレス取得
-sub.get_base_addres(dict_pids)
+sub.get_base_addres()
 
 while 1:
     time.sleep(0.003)
@@ -111,4 +112,4 @@ while 1:
             if save_flag == 1:
                 # 状況再現
                 sub.situationWrit()
-        sub.view()
+    sub.view()
