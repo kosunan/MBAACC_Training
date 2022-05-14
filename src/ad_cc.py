@@ -50,6 +50,7 @@ FN1_KEY_AD = 0x37144C  # BUTTON_FN1
 FN2_KEY_AD = 0x37144D  # BUTTON_FN2 リセットキー
 
 
+
 P_info[0].dmp_ad = DAT_P1_AD
 P_info[1].dmp_ad = DAT_P1_AD + PLR_STRUCT_SIZE
 P_info[2].dmp_ad = DAT_P1_AD + PLR_STRUCT_SIZE * 2
@@ -109,3 +110,8 @@ P_info[0].anten_stop_ad = 0x158908
 P_info[1].anten_stop_ad = 0x158908 + PLR_STRUCT_SIZE
 P_info[2].anten_stop_ad = 0x158908
 P_info[3].anten_stop_ad = 0x158908 + PLR_STRUCT_SIZE
+
+P_info[0].atk_st_ad_pointer_ad = 0x155450
+P_info[1].atk_st_ad_pointer_ad = 0x155450 + PLR_STRUCT_SIZE
+P_info[2].atk_st_ad_pointer_ad = 0x155450 + PLR_STRUCT_SIZE * 2
+P_info[3].atk_st_ad_pointer_ad = 0x155450 + PLR_STRUCT_SIZE * 3

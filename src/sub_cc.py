@@ -61,7 +61,7 @@ def get_base_addres():
             os.system('cls')
             print("Waiting for MBAA to start")
             time.sleep(0.2)
-            
+
     cfg.h_pro = OpenProcess(0x1F0FFF, False, cfg.pid)
 
     # MODULEENTRY32を取得
@@ -94,6 +94,11 @@ def b_unpack(d_obj):
 
 def r_mem(ad, b_obj):
     ReadMem(cfg.h_pro, ad + cfg.base_ad, b_obj, len(b_obj), None)
+    return b_unpack(b_obj)
+
+
+def r_mem_2(ad, b_obj):
+    ReadMem(cfg.h_pro, ad, b_obj, len(b_obj), None)
     return b_unpack(b_obj)
 
 
@@ -165,6 +170,14 @@ def situationCheck():
         n.stop = r_mem(n.stop_ad, n.b_stop)
         n.step_inv = r_mem(n.step_inv_ad, n.b_step_inv)
         n.tag_flag = r_mem(n.tag_flag_ad, n.b_tag_flag)
+
+        n.atk_st_ad_pointer = r_mem(n.atk_st_ad_pointer_ad, n.b_atk_st_ad_pointer)
+
+        n.atk_st_ad = n.atk_st_ad_pointer + 0x42
+        n.throw_ad = n.atk_st_ad_pointer + 0x44
+
+        n.atk_st = r_mem_2(n.atk_st_ad, n.b_atk_st)
+        n.throw = r_mem_2(n.throw_ad, n.b_throw)
 
     tagCharacterCheck()
 
@@ -366,11 +379,6 @@ def bar_add():
             elif n.step_inv != 0:  # バックステップ無敵中
                 font = inv
 
-            for list_a in hit_number:  # ヒットorガードモーション中
-                if n.motion_type == list_a:
-                    font = grd
-                    break
-
             for list_a in jmp_number:  # ジャンプ移行中
                 if n.motion_type == list_a:
                     font = jmp
@@ -381,6 +389,15 @@ def bar_add():
 
             # if n.seeld == 1:# シールド中
             #     font = "\x1b[38;5;255m" + "\x1b[48;5;006m"
+
+            if n.atk_st == 1:  # 、無敵中
+                font = "\x1b[48;5;015m"
+
+                if n.atk != 0:  # 攻撃判定を出しているとき
+                    font = "\x1b[38;5;255m" + "\x1b[48;2;255;160;160m"
+
+            # if n.throw != 0 and n.atk_st == 2:  #投げの判定が出てる瞬間
+            #     font = "\x1b[48;2;255;108;90m"
 
         elif n.motion == 0:
             num = str(n.motion_type)
@@ -393,6 +410,11 @@ def bar_add():
 
         else:  # いずれにも当てはまらないとき
             font = non
+
+        for list_a in hit_number:  # ヒットorガードモーション中
+            if n.motion_type == list_a:
+                font = grd
+                break
 
         n.barlist_1[cfg.Bar_num] = font + num.rjust(2, " ")[-2:] + DEF
         num = str(n.motion_type)

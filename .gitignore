@@ -5,7 +5,7 @@ src/__pycache__/ad_cc.cpython-310.pyc
 src/__pycache__/sub_cc.cpython-310.pyc
 src/__pycache__/sub_cc.cpython-310.pyc
 *.pyc
-*.pyc
+*.txt
 build/MBAACC_Training/Analysis-00.toc
 build/MBAACC_Training/base_library.zip
 build/MBAACC_Training/EXE-00.toc

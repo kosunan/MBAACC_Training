@@ -17,7 +17,7 @@ sub.ex_cmd_enable()
 os.system('mode con: cols=166 lines=10')
 
 os.system('cls')
-os.system('title MBAACC_Training 1.2.1')
+os.system('title MBAACC_Training 1.2.2')
 print('\x1b[1;1H' + '\x1b[?25l')
 windll.winmm.timeBeginPeriod(1)  # タイマー精度を1msec単位にする
 

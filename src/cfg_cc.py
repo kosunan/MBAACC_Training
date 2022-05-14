@@ -25,6 +25,12 @@ class Character_info:
         self.ukemi2_ad = 0x00
         self.x_ad = 0x00
         self.stop_ad = 0x00
+        self.atk_st_ad_pointer_ad = 0x00
+        self.atk_st_ad = 0x00
+        self.throw_ad = 0x00
+
+
+
 
         self.b_dmp = create_string_buffer(971)
         self.b_anten_stop = create_string_buffer(1)
@@ -46,6 +52,12 @@ class Character_info:
         self.b_ukemi2 = create_string_buffer(2)
         self.b_x = create_string_buffer(4)
         self.b_stop = create_string_buffer(1)
+
+        self.b_atk_st_ad_pointer = create_string_buffer(4)
+        self.b_atk_st = create_string_buffer(1)
+
+        self.b_throw = create_string_buffer(4)
+
 
         self.anten_stop = 0
         self.anten_stop2 = 0
@@ -78,7 +90,9 @@ class Character_info:
         self.barlist_1 = list(range(bar_range))
         self.barlist_2 = list(range(bar_range))
         self.format = ''
-
+        self.atk_st_ad_pointer = 0
+        self.atk_st = 0
+        self.throw = 0
 
 P_info = [Character_info(), Character_info(), Character_info(), Character_info()]
 p_info = [Character_info(), Character_info(), Character_info(), Character_info()]
@@ -93,7 +107,7 @@ P1 = P_info[0]
 P2 = P_info[1]
 P3 = P_info[2]
 P4 = P_info[3]
-#
+
 p1 = p_info[0]
 p2 = p_info[1]
 p3 = p_info[2]
