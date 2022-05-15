@@ -248,8 +248,7 @@ def view_st():
 
     # 表示管理　表示するものが無くても前回の表示からインターバルの間は無条件で表示する
     if cfg.interval_time >= cfg.interval and cfg.reset_flag == 0:
-        if cfg.Bar80_flag == 0:
-            cfg.Bar_flag = 1
+        cfg.Bar_flag = 1
 
     if cfg.Bar_flag == 1:
         stop_flame_calc()
@@ -314,7 +313,7 @@ def determineReset():
     bar_ini_flag = 0
 
     if cfg.Bar80_flag == 1:
-        cfg.interval_time = 40
+        cfg.interval_time = 10
 
     # インターバル後の初期化
     if cfg.interval_time <= cfg.interval:
@@ -360,8 +359,24 @@ def bar_add():
     inv = "\x1b[48;5;015m"
     jmp = "\x1b[38;5;000m" + "\x1b[48;5;011m"
 
-    hit_number = [904, 900, 901, 906, 29, 26,
-                  903, 907, 30, 350, 17, 18]
+    throw_number = [350]  # 投げやられ
+
+    hit_number = [
+        17,  # 屈ガード
+        18,  # 立ガード
+        26,  # 立吹っ飛び
+        29,  # 足払いやられ
+        30,  # 垂直吹っ飛び
+        900,  # 立やられ
+        901,  # 立やられ
+        902,  # 屈やられ
+        903,  # やられ
+        904,  # やられ
+        905,  # 屈大やられ
+        906,  # 立大やられ
+        907,  # 立大やられ２
+        908  # 屈大やられ2
+    ]
 
     negligible_number = [0, 10, 11, 12, 13, 14, 15, 20, 16, 594]
 
@@ -384,13 +399,18 @@ def bar_add():
                     font = jmp
                     break
 
-            if n.motion_type == 32 or n.motion_type == 33:  # 起き上がり中
-                font = "\x1b[38;5;255m" + "\x1b[48;5;055m"
+            for list_a in hit_number:  # ヒットorガードモーション中
+                if n.motion_type == list_a:
+                    font = grd
+                    break
 
-            # if n.seeld == 1:# シールド中
-            #     font = "\x1b[38;5;255m" + "\x1b[48;5;006m"
+            # if n.motion_type == 32 or n.motion_type == 33:  # 起き上がり中
+            #     font = "\x1b[38;5;255m" + "\x1b[48;5;055m"
 
-            if n.atk_st == 1:  # 、無敵中
+            if (n.atk_st == 10 or n.atk_st == 12) and n.atk == 0:  # シールド or バンカー
+                font = "\x1b[38;5;255m" + "\x1b[48;5;006m"
+
+            if n.atk_st == 1 or n.atk_st == 0:  # 、無敵中
                 font = "\x1b[48;5;015m"
 
                 if n.atk != 0:  # 攻撃判定を出しているとき
@@ -411,12 +431,13 @@ def bar_add():
         else:  # いずれにも当てはまらないとき
             font = non
 
-        for list_a in hit_number:  # ヒットorガードモーション中
-            if n.motion_type == list_a:
-                font = grd
-                break
+        if n.motion_type == 350:
+            font = grd
+
 
         n.barlist_1[cfg.Bar_num] = font + num.rjust(2, " ")[-2:] + DEF
+
+        num = str(n.atk_st)
         num = str(n.motion_type)
         n.barlist_2[cfg.Bar_num] = font + num.rjust(2, " ")[-2:] + DEF
 
