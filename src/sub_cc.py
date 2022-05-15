@@ -353,10 +353,13 @@ def bar_add():
     atk = "\x1b[38;5;255m" + "\x1b[48;5;160m"
     mot = "\x1b[38;5;255m" + "\x1b[48;5;010m"
     grd = '\x1b[0m' + "\x1b[48;5;250m"
-    nog = "\x1b[38;5;250m" + "\x1b[48;5;000m"
     fre = "\x1b[38;5;234m" + "\x1b[48;5;000m"
-    non = "\x1b[38;5;148m" + "\x1b[48;5;201m"
     inv = "\x1b[48;5;015m"
+    inv_atk = "\x1b[38;5;255m" + "\x1b[48;2;255;160;160m"
+    seeld = "\x1b[38;5;255m" + "\x1b[48;5;006m"
+    bunker = "\x1b[38;5;255m" + "\x1b[48;2;225;184;000m"
+    bunker_atk = "\x1b[38;5;255m" + "\x1b[48;2;242;55;000m"
+
     jmp = "\x1b[38;5;000m" + "\x1b[48;5;011m"
 
     throw_number = [350]  # 投げやられ
@@ -387,13 +390,6 @@ def bar_add():
         if n.motion != 0:
             num = str(n.motion)
             font = mot
-
-            if n.atk != 0:  # 攻撃判定を出しているとき
-                font = atk
-
-            elif n.step_inv != 0:  # バックステップ無敵中
-                font = inv
-
             for list_a in jmp_number:  # ジャンプ移行中
                 if n.motion_type == list_a:
                     font = jmp
@@ -403,18 +399,6 @@ def bar_add():
                 if n.motion_type == list_a:
                     font = grd
                     break
-
-            # if n.motion_type == 32 or n.motion_type == 33:  # 起き上がり中
-            #     font = "\x1b[38;5;255m" + "\x1b[48;5;055m"
-
-            if (n.atk_st == 10 or n.atk_st == 12) and n.atk == 0:  # シールド or バンカー
-                font = "\x1b[38;5;255m" + "\x1b[48;5;006m"
-
-            if n.atk_st == 1 or n.atk_st == 0:  # 、無敵中
-                font = "\x1b[48;5;015m"
-
-                if n.atk != 0:  # 攻撃判定を出しているとき
-                    font = "\x1b[38;5;255m" + "\x1b[48;2;255;160;160m"
 
             # if n.throw != 0 and n.atk_st == 2:  #投げの判定が出てる瞬間
             #     font = "\x1b[48;2;255;108;90m"
@@ -428,17 +412,34 @@ def bar_add():
                     font = "\x1b[38;5;244m" + "\x1b[48;5;000m"
                     num = str(abs(cfg.advantage_f))
 
-        else:  # いずれにも当てはまらないとき
-            font = non
-
-        if n.motion_type == 350:
+        if n.motion_type == 350: #投げやられ
             font = grd
+
+        elif (n.atk_st == 10) and n.atk == 0:  # シールド
+            font = seeld
+
+        elif (n.atk_st == 12) and n.atk == 0:  # バンカー　or 相殺
+            font = bunker
+
+        elif (n.atk_st == 12) and n.atk != 0:  # 相殺攻撃
+            font = bunker_atk
+
+        elif n.step_inv != 0:  # バックステップ無敵中
+            font = inv
+
+        elif n.atk_st == 1 or n.atk_st == 0:  # 無敵中
+            font = inv
+            if n.atk != 0:  # 無敵中攻撃を出しているとき
+                font = inv_atk
+
+        elif n.atk != 0:  # 攻撃判定を出しているとき
+            font = atk
 
 
         n.barlist_1[cfg.Bar_num] = font + num.rjust(2, " ")[-2:] + DEF
 
         num = str(n.atk_st)
-        num = str(n.motion_type)
+        # num = str(n.motion_type)
         n.barlist_2[cfg.Bar_num] = font + num.rjust(2, " ")[-2:] + DEF
 
 
