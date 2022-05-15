@@ -358,7 +358,7 @@ def bar_add():
     inv_atk = "\x1b[38;5;255m" + "\x1b[48;2;255;160;160m"
     seeld = "\x1b[38;5;255m" + "\x1b[48;5;006m"
     bunker = "\x1b[38;5;255m" + "\x1b[48;2;225;184;000m"
-    bunker_atk = "\x1b[38;5;255m" + "\x1b[48;2;242;55;000m"
+    bunker_atk = "\x1b[38;5;255m" + "\x1b[48;2;225;102;000m"
 
     jmp = "\x1b[38;5;000m" + "\x1b[48;5;011m"
 
@@ -582,6 +582,8 @@ def degug_view(state_str):
     debug_str_p1 += " fn2_key " + str(cfg.fn2_key).rjust(7, " ")
     debug_str_p2 += " interval " + str(cfg.interval).rjust(7, " ")
     debug_str_p2 += " Bar80_flag " + str(cfg.Bar80_flag).rjust(7, " ")
+    debug_str_p1 += " cfg.p1.atk " + str(cfg.p1.atk).rjust(7, " ")
+
 
     state_str += debug_str_p1 + END
     state_str += debug_str_p2 + END
