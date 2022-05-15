@@ -412,7 +412,7 @@ def bar_add():
                     font = "\x1b[38;5;244m" + "\x1b[48;5;000m"
                     num = str(abs(cfg.advantage_f))
 
-        if n.motion_type == 350: #投げやられ
+        if n.motion_type == 350:  # 投げやられ
             font = grd
 
         elif (n.atk_st == 10) and n.atk == 0:  # シールド
@@ -424,17 +424,13 @@ def bar_add():
         elif (n.atk_st == 12) and n.atk != 0:  # 相殺攻撃
             font = bunker_atk
 
-        elif n.step_inv != 0:  # バックステップ無敵中
-            font = inv
-
-        elif n.atk_st == 1 or n.atk_st == 0:  # 無敵中
+        elif n.atk_st == 1 or n.atk_st == 0 or n.step_inv != 0:  # 無敵中
             font = inv
             if n.atk != 0:  # 無敵中攻撃を出しているとき
                 font = inv_atk
 
         elif n.atk != 0:  # 攻撃判定を出しているとき
             font = atk
-
 
         n.barlist_1[cfg.Bar_num] = font + num.rjust(2, " ")[-2:] + DEF
 
@@ -583,7 +579,6 @@ def degug_view(state_str):
     debug_str_p2 += " interval " + str(cfg.interval).rjust(7, " ")
     debug_str_p2 += " Bar80_flag " + str(cfg.Bar80_flag).rjust(7, " ")
     debug_str_p1 += " cfg.p1.atk " + str(cfg.p1.atk).rjust(7, " ")
-
 
     state_str += debug_str_p1 + END
     state_str += debug_str_p2 + END
