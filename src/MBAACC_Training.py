@@ -3,19 +3,16 @@ from struct import unpack
 import os
 import time
 import keyboard
-
-import ad_cc
 import cfg_cc
+import ad_cc
+
 import sub_cc
 ad = ad_cc
 cfg = cfg_cc
 sub = sub_cc
 
 sub.ex_cmd_enable()
-
-
 os.system('mode con: cols=166 lines=10')
-
 os.system('cls')
 os.system('title MBAACC_Training 1.2.4')
 print('\x1b[1;1H' + '\x1b[?25l')
@@ -40,7 +37,7 @@ def function_key():
             sub.MAX_Damage_ini()
         flag1 += 1
     # 状況記憶
-    elif keyboard.is_pressed("F2") or cfg.fn1_key == 1 or cfg.fn1_key == 3:
+    elif keyboard.is_pressed("F2") or cfg.fn1_key.num == 1 or cfg.fn1_key.num == 3:
         if flag1 == 0:
             sub.situationMem()
             sub.pause()
@@ -48,10 +45,10 @@ def function_key():
             save_flag = 1
             flag1 = 1
 
-    elif cfg.fn2_key == 1 or cfg.fn2_key == 3:
+    elif cfg.fn2_key.num == 1 or cfg.fn2_key.num == 3:
         if flag1 == 0:
             flag1 = 1
-            if cfg.dummy_status == 5 or cfg.dummy_status == -1:
+            if cfg.dummy_st.num == 5 or cfg.dummy_st.num == -1:
                 sub.situationReset()
             sub.w_mem(ad.COMB_AFTER_TIMER_AD, b'\xFF')
 
@@ -80,13 +77,16 @@ def function_key():
 # ベースアドレス取得
 sub.get_base_addres()
 
+# FN1ボタンの無効化
+sub.disable_fn1()
+
 while 1:
     time.sleep(0.003)
 
     # MODEチェック
     sub.mode_check()
 
-    if cfg.game_mode == 20:
+    if cfg.game_mode.num == 20:
         save_flag = 0
 
     function_key()

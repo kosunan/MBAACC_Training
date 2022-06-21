@@ -1,15 +1,13 @@
 from ctypes import create_string_buffer
+import cfg_cc
+cfg = cfg_cc
+obj = cfg.para(74576)
+stop_situation = cfg.para(1632)
+stop = cfg.para(1)
+damage = cfg.para(52)
+damage2 = cfg.para(1004)
 
-b_obj = create_string_buffer(74576)
-b_stop_situation = create_string_buffer(1632)
-b_stop = create_string_buffer(1)
-b_damage = create_string_buffer(52)
-b_damage2 = create_string_buffer(1004)
-
-b_cam1_x = create_string_buffer(4)
-b_cam2_x = create_string_buffer(4)
-b_cam1_y = create_string_buffer(4)
-b_cam2_y = create_string_buffer(4)
-
-
-damage = create_string_buffer(4)
+cam1_x = cfg.para(4)
+cam2_x = cfg.para(4)
+cam1_y = cfg.para(4)
+cam2_y = cfg.para(4)
