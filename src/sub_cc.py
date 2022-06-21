@@ -467,7 +467,7 @@ def bar_add():
         elif n.atk.num != 0:  # 攻撃判定を出しているとき
             font = atk
 
-        if n.air_flag.num == 0:
+        if n.air_flag.num == 0 and n.y_posi1.num == 0 and n.y_posi2.num == 0:
             font = "\x1b[4m" + font
 
         n.barlist_1[cfg.bar_num] = font + num.rjust(2, " ")[-2:] + DEF
