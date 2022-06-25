@@ -259,7 +259,15 @@ def view_st():
         cfg.bar_flag = 1
 
     if cfg.bar_flag == 1:
+
         stop_flame_calc()
+
+        # 攻撃判定持続計算
+        for n in cfg.p_info:
+            if n.atk.num != 0 and cfg.anten == 0 and cfg.hitstop == 0:  # 攻撃判定を出しているとき
+                n.active += 1
+            elif n.atk.num == 0 and cfg.anten == 0 and cfg.hitstop <= 1:  # 攻撃判定を出してないとき
+                n.active = 0
 
         if cfg.anten == 0 and cfg.hitstop <= 1:
             cfg.bar_num += 1
@@ -352,17 +360,19 @@ def stop_flame_calc():
     elif (cfg.p1.hitstop.num == 0 or cfg.p2.hitstop.num == 0):
         cfg.hitstop = 0
 
+
 def text_font(rgb):
     Text_font_str = "\x1b[38;2;" + str(rgb[0]) + ";" + str(rgb[1]) + ";" + str(rgb[2]) + "m"
     return Text_font_str
+
 
 def bg_font(rgb):
     bg_font_str = "\x1b[48;2;" + str(rgb[0]) + ";" + str(rgb[1]) + ";" + str(rgb[2]) + "m"
     return bg_font_str
 
 
-def get_font(text_rgb,bg_rgb):
-    return text_font(text_rgb)+bg_font(bg_rgb)
+def get_font(text_rgb, bg_rgb):
+    return text_font(text_rgb) + bg_font(bg_rgb)
 
 
 def bar_add():
@@ -371,34 +381,26 @@ def bar_add():
     FC_DEF = '\x1b[39m'
     BC_DEF = '\x1b[49m'
 
-    atk = get_font((255,255,255),(255,0,0))
-
-    mot = get_font((255,255,255),(0,220,20))
-
-    grd_stun = get_font((255,255,255),(58,66,80))
-    airgrd_stun = get_font((255,255,255),(58,66,80))
-
-    hit_stun = get_font((255,255,255),(58,66,80))
-    airhit_stun = get_font((255,255,255),(58,66,80))
-
-    fre = get_font((92,92,92),(0,0,0))
-
-    jmp = get_font((255,255,255),(230,200,61))
-
-    inv = "\x1b[48;5;015m"
-    inv_atk = "\x1b[38;5;255m" + "\x1b[48;2;255;160;160m"
-    seeld = "\x1b[38;5;255m" + "\x1b[48;5;006m"
-    bunker = "\x1b[38;5;255m" + "\x1b[48;2;225;184;000m"
-    bunker_atk = "\x1b[38;5;255m" + "\x1b[48;2;225;102;000m"
-
-
+    atk = get_font((255, 255, 255), (255, 0, 0))
+    mot = get_font((255, 255, 255), (65, 200, 0))
+    grd_stun = get_font((255, 255, 255), (170, 170, 170))
+    hit_stun = get_font((255, 255, 255), (170, 170, 170))
+    fre = get_font((92, 92, 92), (0, 0, 0))
+    jmp = get_font((177, 177, 177), (241, 224, 132))
+    seeld = get_font((255, 255, 255), (145, 194, 255))
+    inv = get_font((200, 200, 200), (255, 255, 255))
+    inv_atk = get_font((255, 255, 255), (255, 160, 160))
+    adv = get_font((255, 255, 255), (0, 0, 0))
+    bunker = get_font((255, 255, 255), (225, 184, 0))
+    bunker_atk = get_font((255, 255, 255), (225, 102, 0))
+    air = get_font((125, 127, 168), (125, 127, 168))
     throw_number = [350]  # 投げやられ
 
     hit_number = [
         26,  # 立吹っ飛び
         29,  # 足払いやられ
         30,  # 垂直吹っ飛び
-        354, # 小バウンド
+        354,  # 小バウンド
         900,  # 立やられ
         901,  # 立やられ
         902,  # 屈やられ
@@ -414,7 +416,8 @@ def bar_add():
         18,  # 立ガード
         19,  # 空中ガード
     ]
-    negligible_number = [0, 10, 11, 12, 13, 14, 15, 20, 16, 594]
+
+    ignore_number = [0, 10, 11, 12, 13, 14, 15, 20, 16, 594]
 
     jmp_number = [34, 35, 36, 37]
 
@@ -444,35 +447,36 @@ def bar_add():
 
             if cfg.DataFlag1 == 1:
                 if n == cfg.p_info[0] or n == cfg.p_info[1]:
-                    font = "\x1b[38;5;244m" + "\x1b[48;5;000m"
+                    font = adv
                     num = str(abs(cfg.advantage_f))
 
         if n.motion_type.num == 350:  # 投げやられ
             font = hit_stun
 
+        elif n.atk_st.num == 12:  # バンカー　or 相殺
+            font = bunker
+
         elif (n.atk_st.num == 10) and n.atk.num == 0:  # シールド
             font = seeld
 
-        elif (n.atk_st.num == 12) and n.atk.num == 0:  # バンカー　or 相殺
-            font = bunker
-
-        elif (n.atk_st.num == 12) and n.atk.num != 0:  # 相殺攻撃
-            font = bunker_atk
-
         elif n.atk_st.num == 1 or n.atk_st.num == 0 or n.step_inv.num != 0:  # 無敵中
             font = inv
-            if n.atk.num != 0:  # 無敵中攻撃を出しているとき
-                font = inv_atk
-
-        elif n.atk.num != 0:  # 攻撃判定を出しているとき
-            font = atk
-
-        if n.air_flag.num == 0 and n.y_posi1.num == 0 and n.y_posi2.num == 0:
-            font = "\x1b[4m" + font
 
         n.barlist_1[cfg.bar_num] = font + num.rjust(2, " ")[-2:] + DEF
 
-        num = str(n.atk_st.num)
+        font = ""
+        num = ""
+        if n.air_flag.num == 0 and n.y_posi1.num == 0 and n.y_posi2.num == 0:  # 地上にいる場合
+            num = ""
+        elif n.air_flag.num == 150 or n.y_posi1.num != 0 or n.y_posi2.num != 0:  # 空中にいる場合:
+            num = "^"
+
+        if n.atk.num != 0:  # 攻撃判定を出しているとき
+            font = atk
+            num = str(n.active)
+            if n.air_flag.num == 150 or n.y_posi1.num != 0 or n.y_posi2.num != 0:  # 空中にいる場合:
+                font += "\x1b[4m"
+
         n.barlist_2[cfg.bar_num] = font + num.rjust(2, " ")[-2:] + DEF
 
         num = str(n.motion_type.num)
@@ -585,7 +589,9 @@ def view():
 
     state_str += '  | 1 2 3 4 5 6 7 8 91011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980' + END
     state_str += '1P|' + cfg.p1.Bar_1 + END
+    state_str += '  |' + cfg.p1.Bar_2 + END
     state_str += '2P|' + cfg.p2.Bar_1 + END
+    state_str += '  |' + cfg.p2.Bar_2 + END
 
     if cfg.debug_flag == 1:
         state_str = degug_view(state_str)
@@ -622,7 +628,7 @@ def degug_view(state_str):
 
     state_str += debug_str_p1 + END
     state_str += debug_str_p2 + END
-    state_str += '1P|' + cfg.p1.Bar_2 + END
+    # state_str += '1P|' + cfg.p1.Bar_2 + END
     state_str += '1P|' + cfg.p1.Bar_3 + END
     state_str += '1P|' + cfg.p1.Bar_4 + END
 

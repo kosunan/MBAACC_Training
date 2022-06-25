@@ -63,9 +63,9 @@ for n in P_info:
 
 
 P_info[0].tag_flag.ad = 0x1552A8
-P_info[1].tag_flag.ad = 0x155D92
+P_info[1].tag_flag.ad = 0x155DA4
 P_info[2].tag_flag.ad = 0x1552A8
-P_info[3].tag_flag.ad = 0x155D92
+P_info[3].tag_flag.ad = 0x155DA4
 
 P_info[0].anten_stop.ad = 0x158908
 P_info[1].anten_stop.ad = 0x158908 + PLR_STRUCT_SIZE

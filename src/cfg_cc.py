@@ -40,6 +40,9 @@ class Character_info:
         self.motion_type_old = 0
         self.motion_chenge_flag = 0
         self.act = 0
+        self.first_active = 0
+        self.active = 0
+
         self.zen = 0
         self.act_flag = 0
         self.Bar_1 = ''
