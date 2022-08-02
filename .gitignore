@@ -20,3 +20,4 @@ build/MBAACC_Training/Tree-02.toc
 build/MBAACC_Training/warn-MBAACC_Training.txt
 build/MBAACC_Training/xref-MBAACC_Training.html
 MBAACC_Training.spec
+*.pyc
