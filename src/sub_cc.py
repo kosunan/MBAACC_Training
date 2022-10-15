@@ -211,6 +211,8 @@ def situationMem():
     para_get(save.cam2_x)
     para_get(save.cam1_y)
     para_get(save.cam2_y)
+    para_get(save.contl_flag)
+    para_get(save.contl_flag2)
 
 
 def situationWrit():
@@ -227,6 +229,8 @@ def situationWrit():
     para_set(save.cam2_x)
     para_set(save.cam1_y)
     para_set(save.cam2_y)
+    para_set(save.contl_flag)
+    para_set(save.contl_flag2)
 
 
 def view_st():

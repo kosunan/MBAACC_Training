@@ -41,6 +41,9 @@ save.obj.ad = OBJ_AD = 0x27BD70  # オブジェクトデータ開始位置
 save.stop_situation.ad = STOP_SITUATION_AD = 0x158600  # 停止状況データ開始位置
 save.damage.ad = DAMAGE_AD = 0x157DD8  # ダメージアドレス開始位置
 save.damage2.ad = DAMAGE2_AD = 0x157E10  # ダメージアドレス開始位置
+save.contl_flag.ad = CONTL_FLAG_AD = 0x157DB8  # 操作フラグ
+save.contl_flag2.ad = CONTL_FLAG_AD = 0x157DBc  # 操作フラグ
+
 
 temp = 0
 for n in P_info:
