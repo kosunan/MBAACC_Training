@@ -1,0 +1,1 @@
+pyinstaller MBAACC_Training.py --onefile
