@@ -44,7 +44,7 @@ class Game_System_Address_Table:
             # 属性名はframe_data_pairsのname要素に基づく
             setattr(self, name, mem_block)
 
-        # 特定の機能(fn1_keyとfn2_key)を無効化
+        # 特定の機能(fn1_key)を無効化
         self.disable_fn1_1_AD.write_absolute(0x41F654, b"\x90" * 12)
         self.disable_fn1_2_AD.write_absolute(0x41F654, b"\x90" * 2)
 
