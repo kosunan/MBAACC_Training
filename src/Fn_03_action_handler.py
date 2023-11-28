@@ -2,7 +2,7 @@ import keyboard
 
 
 class ActionHandler:
-    # コンストラクタにフラグの初期化を追加
+    
     def __init__(self, game_system_obj, save_State_obj):
         self.game_system_fnc_obj = game_system_obj
         self.save_State_fnc_obj = save_State_obj
