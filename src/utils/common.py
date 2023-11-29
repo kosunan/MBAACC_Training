@@ -20,6 +20,38 @@ def high_precision_sleep(target_time):
         pass
 
 
+def high_precision_sleep_until(target_absolute_time):
+    """
+    Waits with high precision until the specified absolute time.
+
+    Args:
+    target_absolute_time (float): The absolute time at which to end the wait, based on the value returned by `time.perf_counter()`.
+                                  The function waits until this time is reached. For example, `time.perf_counter() + 5` specifies a time 5 seconds from now.
+
+    This function first uses `time.sleep` for efficient waiting during the initial part and then actively waits for the remaining very short duration to achieve higher precision.
+
+    指定された絶対時刻まで高精度で待機します。
+
+    引数:
+    target_absolute_time (float): `time.perf_counter()`によって返される値を基準とした、待機を終了すべき絶対時刻。
+                                  この時刻になるまで関数は待機します。例えば、`time.perf_counter() + 5`は現在から5秒後の時刻を指します。
+
+    この関数は、初めの部分を`time.sleep`で効率よく待機し、最後のごく短い間はアクティブに待機することで、より高い精度での待機を実現します。
+    """
+    # Calculate the remaining time until the target absolute time
+    remaining_time = target_absolute_time - time.perf_counter()
+
+    if remaining_time > 0:
+        # Initial wait for the major part of the time
+        initial_sleep_time = remaining_time - 0.002
+        if initial_sleep_time > 0:
+            time.sleep(initial_sleep_time)
+
+        # Actively wait for the remaining time
+        while time.perf_counter() < target_absolute_time:
+            pass
+
+
 def ex_cmd_enable():
     INVALID_HANDLE_VALUE = -1
     STD_INPUT_HANDLE = -10

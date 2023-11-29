@@ -2,7 +2,6 @@ import keyboard
 
 
 class ActionHandler:
-    
     def __init__(self, game_system_obj, save_State_obj):
         self.game_system_fnc_obj = game_system_obj
         self.save_State_fnc_obj = save_State_obj
@@ -12,6 +11,9 @@ class ActionHandler:
         self.is_save_flag = False
 
     def action_handle(self):
+        if self.game_system_fnc_obj.game_mode_check() == 20:
+            self.is_save_flag = False
+            return
         fnc1_but = self.game_system_fnc_obj.fn1_key.read_memory()
         fnc2_but = self.game_system_fnc_obj.fn2_key.read_memory()
         dmy_st = self.game_system_fnc_obj.dummy_st.int_data

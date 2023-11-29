@@ -271,6 +271,16 @@ class FrameIndicator:
                 self.initial_flag = False
             self.indicator_not_active_count = 0
 
+    def get_advantage_value(self):
+        if self.p1_bar_obj.advantage != 0:
+            self.advantage = self.p1_bar_obj.advantage
+            return
+        elif self.p2_bar_obj.advantage != 0:
+            self.advantage = self.p2_bar_obj.advantage * -1
+            return
+
+        self.advantage = 0
+
     def process_exclusive_state(self, color1_p1, color1_p2):
         if (color1_p1 != "\x1b[0m") != (color1_p2 != "\x1b[0m") and self.is_adv_flag:
             if color1_p1 != "\x1b[0m":
@@ -338,7 +348,7 @@ class FrameIndicator:
 
         # バーインデックスの更新
         self.update_bar_index(both_characters_stopped)
-
+        self.get_advantage_value()
         display_p1 = (display_p1_bar1, display_p1_bar2, display_p1_bar3)
         display_p2 = (display_p2_bar1, display_p2_bar2, display_p2_bar3)
         return (display_p1, display_p2)
